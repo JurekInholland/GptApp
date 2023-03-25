@@ -65,6 +65,10 @@ const submit = async () => {
     console.log("Submit clicked" + userInput.value);
     inProcess.value = true;
     const conId = signalr.connection.connectionId ?? "";
+    if (conId == "") {
+        console.log("No connection id");
+        return;
+    }
     result.value = "";
     const searchParams = new URLSearchParams({
         requestMessage: userInput.value,
