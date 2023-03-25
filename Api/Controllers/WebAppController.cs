@@ -3,7 +3,7 @@
 namespace Api.Controllers;
 
 [ApiController]
-public class WebAppController
+public class WebAppController : ControllerBase
 {
     private static readonly string IndexHtml = System.IO.File.ReadAllText("wwwroot/index.html");
 

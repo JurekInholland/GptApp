@@ -30,7 +30,7 @@ public class LowercaseNamingPolicy : JsonNamingPolicy
 
 [ApiController]
 [Route("/api/[controller]")]
-public class ChatController
+public class ChatController : ControllerBase
 {
     private readonly ILogger<ChatController> _logger;
     private readonly ChatHub _hub;
