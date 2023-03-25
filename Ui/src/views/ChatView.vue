@@ -22,7 +22,6 @@ const bodyElement = ref();
 
 const inProcess = ref(false);
 watch(result, async (val) => {
-    console.log("Result changed" + val);
     myInput = val;
     await nextTick();
     scroll();
@@ -38,12 +37,9 @@ onMounted(async () => {
 const receiveStatusUpdate = (message: IWebsocketMessage) => {
 
     store.updateResponse(message);
-
-    console.log(message);
     result.value += message.content;
 
     if (message.finishReason == "stop") {
-        console.log("DONE!!!")
         inProcess.value = false;
     }
 }
@@ -66,7 +62,6 @@ const submit = async () => {
     }
     inProcess.value = true;
     const conId = signalr.connection.connectionId ?? "";
-    console.log("Submit clicked" + userInput.value + " " + conId);
     if (conId == "") {
         console.log("No connection id");
         return;
@@ -92,7 +87,6 @@ const submit = async () => {
 //     })
 // }
 function scroll() {
-    console.log("Scrolling");
     window.scrollTo({ top: window.screenX }); // , behavior: 'smooth'
 }
 </script>

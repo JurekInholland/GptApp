@@ -30,7 +30,6 @@ function updateValue(event: Event) {
     emits('update:modelValue', value)
 }
 function onButtonClick() {
-    console.log("Button clicked")
     emits('submit')
 }
 </script>
