@@ -26,5 +26,5 @@ COPY --from=publish /app/publish .
 COPY --from=build-ui /app/dist ./wwwroot
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 \
   DOTNET_RUNNING_IN_CONTAINER=true \
-  ASPNETCORE_URLS=http://+:8080 \
+  ASPNETCORE_URLS=http://+:8080
 ENTRYPOINT ["dotnet", "Api.dll", "--urls", "http://0.0.0.0:8080"]
