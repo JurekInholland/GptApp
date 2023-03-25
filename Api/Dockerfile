@@ -1,6 +1,6 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
-EXPOSE 80
+#EXPOSE 80
 #EXPOSE 443
 
 FROM node:19-alpine AS build-ui
@@ -24,4 +24,7 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 COPY --from=build-ui /app/dist ./wwwroot
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 \
+  DOTNET_RUNNING_IN_CONTAINER=true \
+  ASPNETCORE_URLS=http://+:8080 \
 ENTRYPOINT ["dotnet", "Api.dll", "--urls", "http://0.0.0.0:8080"]
