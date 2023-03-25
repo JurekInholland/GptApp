@@ -46,11 +46,11 @@ public class ChatController : ControllerBase
         _logger.LogInformation("{RequestMessage} --- {ConnectionId}", requestMessage, connectionId);
         OpenAICompletion completion = new OpenAICompletion
         {
-            Messages = new ApiMessage[] {Prompts.BasedSystemMessage, new() {Content = requestMessage, Role = "user"}},
+            Messages = new[] {Prompts.BasedSystemMessage, new() {Content = requestMessage, Role = "user"}},
             Temperature = 0.5,
             N = 1,
             Stream = true,
-            MaxTokens = 500,
+            MaxTokens = 1000,
             Model = "gpt-3.5-turbo",
         };
 
@@ -86,8 +86,6 @@ public class ChatController : ControllerBase
                 break;
             }
 
-            // Console.WriteLine(line);
-
             WebsocketResponse res = new();
 
             try
@@ -113,6 +111,7 @@ public class ChatController : ControllerBase
                     continue;
                     // builder.Append(content);
                 }
+
                 if (chunk.Choices[0].FinishReason != null)
                 {
                     Console.WriteLine("finish reason");
