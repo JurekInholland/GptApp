@@ -2,7 +2,6 @@
 import Markdown from 'markdown-it';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/base16/gruvbox-dark-medium.css';
-import mdBr from 'markdown-it-br';
 
 import { computed, ref, watch } from 'vue';
 import type { IAPIResponse } from '@/types';
@@ -20,6 +19,7 @@ const props = defineProps<{
 // });
 
 const md = Markdown({
+    breaks: true,
     highlight: (
         str: string,
         lang: string
@@ -36,7 +36,7 @@ const md = Markdown({
         return `<pre class="hljs"><code>${highlighted}</code></pre>`;
     },
 });
-md.use(mdBr);
+// md.use(mdBr);
 
 const content = computed(() => {
     return md.render(props.response.message);
