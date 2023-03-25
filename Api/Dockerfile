@@ -3,7 +3,7 @@ WORKDIR /app
 EXPOSE 80
 #EXPOSE 443
 
-FROM registry.hub.docker.com/_/node:19-alpine AS build-ui
+FROM node:19-alpine AS build-ui
 WORKDIR /app
 COPY ./Ui .
 RUN npm install
