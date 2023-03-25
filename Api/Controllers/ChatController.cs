@@ -16,8 +16,7 @@ public class OpenAICompletion
     public bool Stream { get; set; }
     public string Model { get; set; }
 
-    [JsonPropertyName("max_tokens")]
-    public int MaxTokens { get; set; }
+    [JsonPropertyName("max_tokens")] public int MaxTokens { get; set; }
 }
 
 public class LowercaseNamingPolicy : JsonNamingPolicy
@@ -44,6 +43,7 @@ public class ChatController : ControllerBase
     [HttpGet(nameof(StreamResponse))]
     public async Task<IActionResult> StreamResponse(string requestMessage, string connectionId)
     {
+        _logger.LogInformation("{RequestMessage} --- {ConnectionId}", requestMessage, connectionId);
         OpenAICompletion completion = new OpenAICompletion
         {
             Messages = new ApiMessage[] {Prompts.BasedSystemMessage, new() {Content = requestMessage, Role = "user"}},

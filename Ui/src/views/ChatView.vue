@@ -29,8 +29,10 @@ watch(result, async (val) => {
     // section.value.scrollIntoView( { behavior: "smooth", block: "end" });
 })
 
-onMounted(() => {
+onMounted(async () => {
     signalr.on('update', receiveStatusUpdate);
+    let conId = await signalr.invoke('GetConnectionId');
+    console.log("Connection id: " + conId);
     bodyElement.value = document.body;
 })
 const receiveStatusUpdate = (message: IWebsocketMessage) => {
@@ -62,9 +64,9 @@ const submit = async () => {
         console.log("Already in process");
         return;
     }
-    console.log("Submit clicked" + userInput.value);
     inProcess.value = true;
     const conId = signalr.connection.connectionId ?? "";
+    console.log("Submit clicked" + userInput.value + " " + conId);
     if (conId == "") {
         console.log("No connection id");
         return;
@@ -104,9 +106,9 @@ function scroll() {
             <!-- <div class="spin"> -->
             <!-- </div> -->
             <!-- message: string;
-  status: string;
-  date: string;
-  role: string -->
+      status: string;
+      date: string;
+      role: string -->
             <!-- <CodeBlock :response="{message: code, status: 'test',date: new Date().toISOString(), role: 'assistant' }" /> -->
 
             <CodeBlock style="block" v-for="item in store.sortedResponses" :response="item" :key="item.message" />
