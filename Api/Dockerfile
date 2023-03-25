@@ -24,4 +24,4 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 COPY --from=build-ui /app/dist ./wwwroot
-ENTRYPOINT ["dotnet", "Api.dll"]
+ENTRYPOINT ["dotnet", "Api.dll", "--urls", "http://0.0.0.0:8080"]
