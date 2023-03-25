@@ -50,7 +50,7 @@ public class ChatController : ControllerBase
             Temperature = 0.5,
             N = 1,
             Stream = true,
-            MaxTokens = 600,
+            MaxTokens = 500,
             Model = "gpt-3.5-turbo",
         };
 
@@ -112,6 +112,10 @@ public class ChatController : ControllerBase
                 {
                     continue;
                     // builder.Append(content);
+                }
+                if (chunk.Choices[0].FinishReason != null)
+                {
+                    Console.WriteLine("finish reason");
                 }
             }
             catch (Exception e)

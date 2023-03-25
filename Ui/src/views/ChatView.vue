@@ -39,7 +39,7 @@ const receiveStatusUpdate = (message: IWebsocketMessage) => {
     store.updateResponse(message);
     result.value += message.content;
 
-    if (message.finishReason == "stop") {
+    if (message.finishReason != null) {
         inProcess.value = false;
     }
 }
@@ -100,9 +100,9 @@ function scroll() {
             <!-- <div class="spin"> -->
             <!-- </div> -->
             <!-- message: string;
-      status: string;
-      date: string;
-      role: string -->
+          status: string;
+          date: string;
+          role: string -->
             <!-- <CodeBlock :response="{message: code, status: 'test',date: new Date().toISOString(), role: 'assistant' }" /> -->
 
             <CodeBlock style="block" v-for="item in store.sortedResponses" :response="item" :key="item.message" />
