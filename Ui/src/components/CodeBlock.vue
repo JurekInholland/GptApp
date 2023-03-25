@@ -24,22 +24,18 @@ const md = Markdown({
         str: string,
         lang: string
     ) => {
+        console.log("STR: ", str)
         console.log("LANG: ", lang)
-        // const code = lang && hljs.getLanguage(lang) ? hljs.highlight(str, { language: lang, ignoreIllegals: true }).value : md.utils.escapeHtml(str);
         const highlighted = lang
             ? hljs.highlight(str, { language: lang, ignoreIllegals: true }).value
             : hljs.highlightAuto(str).value;
-
-        console.log(lang)
-        console.log(highlighted)
-
         return `<pre class="hljs"><code>${highlighted}</code></pre>`;
     },
 });
 // md.use(mdBr);
 
 const content = computed(() => {
-    return md.render(props.response.message);
+    return md.render(props.response.message.replace("based", "`based`").replace("Based", "`Based`"));
 });
 </script>
 

@@ -50,7 +50,7 @@ public class ChatController : ControllerBase
             Temperature = 0.5,
             N = 1,
             Stream = true,
-            MaxTokens = 200,
+            MaxTokens = 600,
             Model = "gpt-3.5-turbo",
         };
 

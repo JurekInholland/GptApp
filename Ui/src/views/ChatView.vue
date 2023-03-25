@@ -87,7 +87,7 @@ const submit = async () => {
 // }
 function scroll() {
     console.log("Scrolling");
-    window.scrollTo({ top: window.screenX, behavior: 'smooth' });
+    window.scrollTo({ top: window.screenX }); // , behavior: 'smooth'
 }
 </script>
 
@@ -96,12 +96,14 @@ function scroll() {
     <Header />
     <div ref="section" class="cont">
         <Spinner v-if="inProcess" class="spinner" />
-        <div class="sec" >
+        <div class="sec">
             <!-- <div class="spin"> -->
             <!-- </div> -->
-
-            <!-- <CodeBlock :text="code" />
-                    <CodeBlock v-if="result != ''" :text="result" /> -->
+            <!-- message: string;
+  status: string;
+  date: string;
+  role: string -->
+            <!-- <CodeBlock :response="{message: code, status: 'test',date: new Date().toISOString(), role: 'assistant' }" /> -->
 
             <CodeBlock style="block" v-for="item in store.sortedResponses" :response="item" :key="item.message" />
 
@@ -115,6 +117,7 @@ function scroll() {
 .block {
     border: 2px solid rgba(223, 191, 142, .75);
 }
+
 .cont {
     display: flex;
     flex-direction: column;
@@ -142,7 +145,7 @@ function scroll() {
     /* margin: 0 auto; */
     /* top: 5rem; */
     overflow: hidden;
-    /* margin-bottom: 1rem; */
+    margin-bottom: 4rem;
 }
 
 .spin {
