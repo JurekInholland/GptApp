@@ -25,12 +25,11 @@ const md = Markdown({
     str: string,
     lang: string
   ) => {
-    console.log("STR: ", str)
-    console.log("LANG: ", lang)
+
     const highlighted = lang
       ? hljs.highlight(str, { language: lang, ignoreIllegals: true }).value
       : hljs.highlightAuto(str).value;
-    return `<pre class="hljs"><code>${highlighted}</code></pre>`;
+    return `<pre  class="hljs"><code>${highlighted}</code></pre>`;
   },
 });
 // md.use(mdBr);
@@ -42,10 +41,22 @@ const content = computed(() => {
 
 
 <template>
-  <div :class="props.response.role === 'user' ? 'human' : 'bot'" ref="message" class="message" v-html="content" />
+  <div style="position: relative;">
+    <h3 class="author">{{ props.response.role === 'bot' ? 'chad gbd' : 'user' }}</h3>
+    <div :class="props.response.role === 'user' ? 'human' : 'bot'" ref="message" class="message" v-html="content" />
+  </div>
 </template>
-
 <style>
+.author {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  top: -10px;
+  font-size: 1.25rem;
+  color: white;
+  /* background-color: #222; */
+}
+
 code {
   text-align: left;
   color: var(--color-green);
@@ -55,16 +66,19 @@ code {
 }
 
 .hljs {
+  margin: 1rem;
   padding: 1rem;
   line-height: 1.33rem;
   overflow-x: auto;
-  white-space: wrap;
+
+  /* white-space: pre-wrap; */
 
 }
 
 .hljs code {
   color: unset;
   font-weight: unset;
+
 }
 
 .human {

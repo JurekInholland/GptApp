@@ -125,7 +125,7 @@ function scroll() {
     justify-content: center;
     align-items: center;
     padding: 1rem;
-    overflow: auto;
+    overflow: hidden;
     margin-bottom: 2.5rem;
     /* max-height: calc(100vh - 12rem); */
     /* max-height: 100vh; */
@@ -144,7 +144,6 @@ function scroll() {
     max-width: 1280px;
     /* margin: 0 auto; */
     /* top: 5rem; */
-    overflow: hidden;
     margin-bottom: 4rem;
 }
 
