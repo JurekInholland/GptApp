@@ -37,19 +37,19 @@ function clearResponses() {
                 <select v-model="modelValue.model" name="model" id="">
                     <option v-for="[key, val] in Object.entries(models)" :value="key">{{ val }}</option>
                     <!-- <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
-                                <option value="babbage">babbage</option>
-                                <option value="davinci">davinci</option>
-                            <option value="ada">ada</option> -->
-            </select>
+                                            <option value="babbage">babbage</option>
+                                            <option value="davinci">davinci</option>
+                                <option value="ada">ada</option> -->
+                </select>
         </label>
         <label for="system">System Prompt
             <select v-model="modelValue.systemPrompt" name="system" id="">
 
-                    <option v-for="prompt in Object.keys(prompts)" :value="prompt">{{ prompt }}</option>
+                <option v-for="prompt in Object.keys(prompts)" :value="prompt">{{ prompt }}</option>
 
                     <!-- <option value="default">default</option>
-                        <option value="chadgbd">chadgbd</option>
-                        <option value="system3">system3</option> -->
+                                    <option value="chadgbd">chadgbd</option>
+                                    <option value="system3">system3</option> -->
                 </select>
             </label>
             <label for="temp">Temperature: {{ modelValue.temperature }}
@@ -59,10 +59,12 @@ function clearResponses() {
                 <input v-model="modelValue.maxTokens" name="maxTokens" type="range" min="0" max="4096" step="1">
             </label>
 
-            <label style="width: 164px;" for="presencePenalty">Presence Penalty: {{ modelValue.presencePenalty }}
+            <label style="min-width: 172px;width:172px;" for="presencePenalty">Presence Penalty: {{
+                modelValue.presencePenalty }}
                 <input v-model="modelValue.presencePenalty" name="presencePenalty" type="range" min="-2" max="2" step="0.1">
             </label>
-            <label style="width: 164px;" for="frequencyPenalty">Frequency Penalty: {{ modelValue.frequencyPenalty }}
+            <label style="min-width: 172px;width:172px;" for="frequencyPenalty">Frequency Penalty: {{
+                modelValue.frequencyPenalty }}
                 <input v-model="modelValue.frequencyPenalty" name="frequencyPenalty" type="range" min="-2" max="2"
                     step="0.1">
             </label>
@@ -71,11 +73,11 @@ function clearResponses() {
                 <input v-model="modelValue.includeHistory" name="history" type="checkbox">
             </label>
             <!-- <label for="topk">Top k
-                                        <input name="topk" type="number" min="1" max="100">
-                                    </label>
-                                    <label for="topp">Top p
-                                        <input name="topp" type="number" min="0" max="1" step="0.01">
-                                    </label> -->
+                                                    <input name="topk" type="number" min="1" max="100">
+                                                </label>
+                                                <label for="topp">Top p
+                                                    <input name="topp" type="number" min="0" max="1" step="0.01">
+                                                </label> -->
             <label>Clear History
                 <button @click="clearResponses">
                     <Icon icon="grommet-icons:clear" />
@@ -102,6 +104,7 @@ button {
     width: 100%;
     display: flex;
     justify-content: center;
+    z-index: 10;
 }
 
 section {
@@ -115,7 +118,7 @@ section {
     max-width: 1280px;
     /* background-color: rgba(255, 255, 255, .05); */
     overflow: hidden;
-
+    margin: 0 1rem;
 }
 
 section input,
@@ -129,10 +132,11 @@ label {
     display: flex;
     gap: .5rem;
     flex-direction: column;
-    color: white;
+    color: rgba(255, 255, 255, .85);
     flex-grow: 1;
     text-align: left;
     flex-basis: 120px;
     white-space: nowrap;
+    font-weight: bold;
 }
 </style>

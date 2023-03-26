@@ -90,6 +90,7 @@ function onSettingsClick() {
     background-color: rgb(62, 62, 62);
     width: 100%;
     height: 4rem;
+    z-index: 20;
     /* padding: 0 2rem; */
 }
 

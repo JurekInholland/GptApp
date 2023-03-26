@@ -176,8 +176,9 @@ function createCompletionRequest(): ICompletionRequest {
 
 <template>
     <Header />
+    <!-- todo: v-auto-animate -->
     <div ref="section" class="cont" :style="{ 'padding-bottom': offset + 'px' }">
-        <div class="sec ">
+        <div class="sec">
             <CodeBlock style="block" v-for="item in store.sortedResponses" :response="item" :key="item.message" />
         </div>
         <Transition>

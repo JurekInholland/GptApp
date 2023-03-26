@@ -55,7 +55,7 @@ const content = computed(() => {
   top: -10px;
   font-size: 1.25rem;
   color: white;
-  text-shadow: 0px 3px 3px rgba(0, 0, 0, 1);
+  text-shadow: 0px 3px 3px rgba(0, 0, 0, .75);
 }
 
 .green {
@@ -99,7 +99,7 @@ code {
 }
 
 .bot {
-  background-color: #333;
+  background-color: #2f2f2f;
   border: 2px solid rgba(223, 191, 142, .75);
 
 }
@@ -118,4 +118,5 @@ code {
 
 /* .message p {
     max-width: 900px
-} */</style>
+} */
+</style>

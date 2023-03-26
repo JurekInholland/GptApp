@@ -1,7 +1,9 @@
 import { createPinia } from "pinia";
-import { createPersistedState } from 'pinia-plugin-persistedstate'
+import { createPersistedState } from "pinia-plugin-persistedstate";
 import router from "./router";
 import { createApp } from "vue";
+import { autoAnimatePlugin } from "@formkit/auto-animate/vue";
+
 import "./assets/main.css";
 import App from "./App.vue";
 import { VueSignalR } from "@quangdao/vue-signalr";
@@ -13,14 +15,17 @@ import "@fontsource/roboto-mono";
 import "./assets/slider.scss";
 
 const pinia = createPinia();
-pinia.use(createPersistedState({
-  auto: true,
-}))
+pinia.use(
+  createPersistedState({
+    auto: true,
+  })
+);
 
 createApp(App)
   .use(pinia)
   .use(router)
   .use(VueSignalR, { url: "/api/signalr" })
+  .use(autoAnimatePlugin)
   //   .use(PerfectScrollbar, {
   //     watchOptions: true,
   //   })
