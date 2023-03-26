@@ -48,8 +48,8 @@ function onSettingsClick() {
                 <div class="menu">
                     <Hamburger @change="onSettingsClick" />
                     <!-- <button class="settings" @click="onSettingsClick">
-                                    <Icon style="font-size: 2rem;" icon="carbon:menu" />
-                                </button> -->
+                                            <Icon style="font-size: 2rem;" icon="carbon:menu" />
+                                        </button> -->
                 </div>
                 <!-- <CodeBlock :code="query" /> -->
                 <div class="input">
@@ -63,7 +63,7 @@ function onSettingsClick() {
         </div>
     </div>
     <!-- <p>Tokens: ~{{ tokenCount.toFixed(0) }}</p>
-                                                    <p>Cost: ~{{ queryCost.toFixed(6) }} €</p> -->
+                                                            <p>Cost: ~{{ queryCost.toFixed(6) }} €</p> -->
 </template>
 
 <style scoped>
@@ -77,6 +77,7 @@ function onSettingsClick() {
     flex-basis: 1280px;
     padding: 0 1rem;
 }
+
 .background {
     display: flex;
     justify-content: center;
@@ -140,6 +141,10 @@ input::placeholder {
 
 }
 
+button:focus-within > .input {
+    border: 2px solid var(--color-green);
+}
+
 button {
     transition: color 0.2s ease-in-out;
     color: rgba(255, 255, 255, 0.5);
@@ -148,12 +153,18 @@ button {
 .input:focus-within button {
     color: var(--color-green-muted);
 }
-
+.input button {
+    height: 2rem;
+}
+.input button svg {
+    transform: translateY(-2px);
+}
 .input button:hover {
     color: var(--color-green);
 }
 
 .input button:disabled {
+    pointer-events: none;
     color: rgba(255, 255, 255, 0.25);
     cursor: default;
 }

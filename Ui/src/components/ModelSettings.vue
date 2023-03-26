@@ -37,19 +37,19 @@ function clearResponses() {
                 <select v-model="modelValue.model" name="model" id="">
                     <option v-for="[key, val] in Object.entries(models)" :value="key">{{ val }}</option>
                     <!-- <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
-                                            <option value="babbage">babbage</option>
-                                            <option value="davinci">davinci</option>
-                                <option value="ada">ada</option> -->
+                                                        <option value="babbage">babbage</option>
+                                                        <option value="davinci">davinci</option>
+                                            <option value="ada">ada</option> -->
                 </select>
-        </label>
-        <label for="system">System Prompt
+            </label>
+            <label for="system">System Prompt
             <select v-model="modelValue.systemPrompt" name="system" id="">
 
                 <option v-for="prompt in Object.keys(prompts)" :value="prompt">{{ prompt }}</option>
 
-                    <!-- <option value="default">default</option>
-                                    <option value="chadgbd">chadgbd</option>
-                                    <option value="system3">system3</option> -->
+                <!-- <option value="default">default</option>
+                                                <option value="chadgbd">chadgbd</option>
+                                                <option value="system3">system3</option> -->
                 </select>
             </label>
             <label for="temp">Temperature: {{ modelValue.temperature }}
@@ -70,29 +70,37 @@ function clearResponses() {
             </label>
 
             <label for="history">Include history
-                <input v-model="modelValue.includeHistory" name="history" type="checkbox">
+                <div>
+                    <input v-model="modelValue.includeHistory" name="history" type="checkbox">
+                </div>
             </label>
             <!-- <label for="topk">Top k
-                                                    <input name="topk" type="number" min="1" max="100">
-                                                </label>
-                                                <label for="topp">Top p
-                                                    <input name="topp" type="number" min="0" max="1" step="0.01">
-                                                </label> -->
+                                                                <input name="topk" type="number" min="1" max="100">
+                                                            </label>
+                                                            <label for="topp">Top p
+                                                                <input name="topp" type="number" min="0" max="1" step="0.01">
+                                                            </label> -->
             <label>Clear History
-                <button @click="clearResponses">
-                    <Icon icon="grommet-icons:clear" />
-                </button>
+                <div class="center">
+                    <button @click="clearResponses">
+                        <Icon icon="grommet-icons:clear" />
+                    </button>
+                </div>
             </label>
         </section>
     </div>
 </template>
 
 <style scoped>
+.center {
+    display: flex;
+    justify-content: center;
+}
 button {
     color: red;
     font-size: 1.5rem;
     height: 1.5rem;
-    margin-top: .25rem;
+    /* margin-top: .25rem; */
 
 }
 
@@ -138,5 +146,10 @@ label {
     flex-basis: 120px;
     white-space: nowrap;
     font-weight: bold;
+}
+
+label :nth-child(1) {
+    /* background-color: red; */
+    overflow: hidden;
 }
 </style>
