@@ -12,11 +12,11 @@ namespace Api.Controllers;
 
 public class OpenAICompletion
 {
-    public ApiMessage[] Messages { get; set; }
+    public ApiMessage[] Messages { get; set; } = null!;
     public double Temperature { get; set; }
     public int N { get; set; }
     public bool Stream { get; set; }
-    public string Model { get; set; }
+    public string Model { get; set; } = "";
 
     [JsonPropertyName("max_tokens")] public int MaxTokens { get; set; }
 }
@@ -51,6 +51,7 @@ public class ChatController : ControllerBase
     public async Task<IActionResult> ServiceRequest([FromBody] CompletionRequest completion, string? connectionId)
     {
         _logger.LogInformation("{RequestMessage} --- {ConnectionId}", completion.Messages[0].Content, completion.Messages[0].Role);
+        if (connectionId is null) return BadRequest();
         var stream = await _openAiService.GetCompletionStream(completion);
 
         await _signalRService.StreamToClient(connectionId, "update", stream);

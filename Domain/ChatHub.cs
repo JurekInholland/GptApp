@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
-namespace Services;
+namespace Domain;
 
 public class ChatHub : Hub
 {
