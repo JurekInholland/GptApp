@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watch, nextTick, type Ref, computed } from 'vue'
+import { onMounted, ref, watch, nextTick, type Ref, computed, onBeforeUnmount } from 'vue'
 import { useSignalR } from '@quangdao/vue-signalr';
 import CodeBlock from '../components/CodeBlock.vue';
 import type { ICompletionMessage, IChatCompletionRequest, IModelSettings, IWebsocketMessage } from '../types';
@@ -24,6 +24,9 @@ const offset = ref(16)
 
 const settingsOpen = ref(false);
 
+const connected: Ref<boolean> = ref(true);
+const scrollBar = ref<{ scrollEl: HTMLDivElement; }>();
+
 watch(settingsOpen, async (val) => {
     await nextTick();
     if (val) {
@@ -38,17 +41,19 @@ watch(settingsOpen, async (val) => {
     gsap.to(offset, { duration: .5, value: 16 })
 })
 function isScrolledToBottom() {
-    const scrollTop = document.documentElement.scrollTop;
-    const scrollHeight = document.documentElement.scrollHeight;
-    const clientHeight = document.documentElement.clientHeight;
 
+    const scrollTop = scrollBar.value!.scrollEl.scrollTop;
+    const scrollHeight = scrollBar.value!.scrollEl.scrollHeight;
+    const clientHeight = scrollBar.value!.scrollEl.clientHeight;
+    console.log("is scrolled to bottom", scrollTop, clientHeight, scrollHeight, scrollTop + clientHeight >= scrollHeight)
     return scrollTop + clientHeight >= scrollHeight;
 }
 
 async function repeatedScroll() {
     for (let i = 0; i < 50; i++) {
         setTimeout(() => {
-            window.scrollTo({ top: document.body.scrollHeight });
+            // scroll();
+            scrollBar.value!.scrollEl.scrollTo({ top: scrollBar.value!.scrollEl.scrollHeight + 1000 })
         }, 10 * i);
     }
 }
@@ -67,19 +72,40 @@ watch(result, async (val) => {
 })
 
 onMounted(async () => {
-    signalr.on('update', receiveStatusUpdate);
-    let conId = await signalr.invoke('GetConnectionId');
-    console.log("Connection id: " + conId);
-    bodyElement.value = document.body;
-    setupAnimations();
-})
+    await nextTick();
+    // const con = signalr.connection.connectionId;
 
-function setupAnimations() {
-    // const tl = gsap.timeline();
-    // tl.to(offset, 320, { value: 162, ease: "power2.out" });
-    // tl.fromTo(section.value, { opacity: 0 }, { opacity: 1, duration: 1 });
-    // tl.fromTo(section.value, { y: 100 }, { y: 0, duration: 1 });
+    setTimeout(async () => {
+        let conId: string | null = null;
+        try {
+
+            conId = await signalr.invoke('GetConnectionId');
+        }
+        catch (e) {
+            console.log('err');
+        }
+        if (conId !== null) {
+            connected.value = true;
+        }
+    }, 1000);
+
+    // console.log(con);
+
+
+    signalr.on('update', receiveStatusUpdate);
+    signalr.connection.onclose(() => {
+        handleConnectionClose()
+    })
+    bodyElement.value = document.body;
+})
+onBeforeUnmount(() => {
+    signalr.off('update', receiveStatusUpdate);
+})
+function handleConnectionClose() {
+    console.log("Connection closed");
+    connected.value = false;
 }
+
 
 const receiveStatusUpdate = (message: IWebsocketMessage) => {
 
@@ -133,7 +159,10 @@ const submit = async () => {
 }
 
 function scroll() {
-    window.scrollTo({ top: window.screenX + 32 }); // , behavior: 'smooth'
+    console.log(scrollBar.value)
+    scrollBar.value!.scrollEl.scrollTo({ top: scrollBar.value!.scrollEl.scrollHeight + 1000, behavior: 'smooth' })
+    // scrollBar.value!.scrollEl.scrollTop = scrollBar.value!.scrollEl.scrollHeight + 1000;
+    // window.scrollTo({ top: window.screenX + 32 }); // , behavior: 'smooth'
 }
 
 function createCompletionRequest(): IChatCompletionRequest {
@@ -175,20 +204,40 @@ function createCompletionRequest(): IChatCompletionRequest {
 </script>
 
 <template>
-    <Header />
-    <!-- todo: v-auto-animate -->
-    <div ref="section" class="cont" :style="{ 'padding-bottom': offset + 'px' }">
-        <div class="sec">
-            <CodeBlock style="block" v-for="item in store.sortedResponses" :response="item" :key="item.message" />
+    <custom-scrollbar ref="scrollBar" :style="{ width: '100vw', height: 'calc(100vh - 4rem)' }">
+
+        <div class="top">
+            <!-- <button @click="scroll">scrl</button> -->
+            <Header />
+            <p v-if="!connected">lost connection... (press F5)</p>
         </div>
-        <Transition>
-            <ModelSettings ref="settingsContainer" v-model="modelSettings" v-if="settingsOpen" />
-        </Transition>
-    </div>
-    <api-input v-model:model-value="userInput" v-model:settings-open="settingsOpen" @submit="submit" />
+        <!-- todo: v-auto-animate -->
+        <div ref="section" class="cont" :style="{ 'padding-bottom': offset + 'px' }">
+            <div class="sec">
+                <CodeBlock style="block" v-for="item in store.sortedResponses" :response="item" :key="item.message" />
+            </div>
+            <Transition>
+                <ModelSettings ref="settingsContainer" v-model="modelSettings" v-if="settingsOpen" />
+            </Transition>
+        </div>
+        <ApiInput :disabled="!connected" v-model:model-value="userInput" v-model:settings-open="settingsOpen" @submit="submit" />
+    </custom-scrollbar>
 </template>
 
-<style >
+<style scoped>
+.top {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    padding-top: 1rem;
+
+}
+
+.top p {
+    color: #d75f5f;
+}
+
 .block {
     border: 2px solid rgba(223, 191, 142, .75);
 
@@ -206,9 +255,9 @@ function createCompletionRequest(): IChatCompletionRequest {
     height: auto;
 }
 
-.v-leave-active body {
+/* .v-leave-active body, .v-leave-active #app {
     overflow: hidden;
-}
+} */
 
 .v-enter-from,
 .v-leave-to {
@@ -219,6 +268,7 @@ function createCompletionRequest(): IChatCompletionRequest {
     padding-bottom: 12rem !important;
 }
 
+
 .cont {
     display: flex;
     flex-direction: column;
@@ -227,7 +277,7 @@ function createCompletionRequest(): IChatCompletionRequest {
     align-items: center;
     padding: 1rem;
     overflow: hidden;
-    margin-bottom: 2.5rem;
+    /* margin-bottom: 2.5rem; */
     /* background-color: brown; */
 
 }
@@ -240,7 +290,7 @@ function createCompletionRequest(): IChatCompletionRequest {
     width: 100%;
     height: 100%;
     max-width: 1280px;
-    margin-bottom: 4rem;
+    /* margin-bottom: 4rem; */
     /* background-color: blue; */
 }
 

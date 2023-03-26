@@ -38,9 +38,9 @@ function clearResponses() {
                     <option v-for="[key, val] in Object.entries(models)" :value="key" :disabled="key != 'gpt-3.5-turbo'">{{
                         val }}</option>
                     <!-- <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
-                                                                    <option value="babbage">babbage</option>
-                                                                    <option value="davinci">davinci</option>
-                                                        <option value="ada">ada</option> -->
+                                                                            <option value="babbage">babbage</option>
+                                                                            <option value="davinci">davinci</option>
+                                                                <option value="ada">ada</option> -->
                 </select>
             </label>
             <label for="system">Persona
@@ -49,8 +49,8 @@ function clearResponses() {
                 <option v-for="[key, prompt] in Object.entries(prompts)" :value="key">{{ prompt.name }}</option>
 
                 <!-- <option value="default">default</option>
-                                                            <option value="chadgbd">chadgbd</option>
-                                                            <option value="system3">system3</option> -->
+                                                                    <option value="chadgbd">chadgbd</option>
+                                                                    <option value="system3">system3</option> -->
                 </select>
             </label>
             <label for="temp">Temperature: {{ modelValue.temperature }}
@@ -76,11 +76,11 @@ function clearResponses() {
                 </div>
             </label>
             <!-- <label for="topk">Top k
-                                                                            <input name="topk" type="number" min="1" max="100">
-                                                                        </label>
-                                                                        <label for="topp">Top p
-                                                                            <input name="topp" type="number" min="0" max="1" step="0.01">
-                                                                        </label> -->
+                                                                                    <input name="topk" type="number" min="1" max="100">
+                                                                                </label>
+                                                                                <label for="topp">Top p
+                                                                                    <input name="topp" type="number" min="0" max="1" step="0.01">
+                                                                                </label> -->
             <label @click.prevent="">Clear History
                 <div class="center">
                     <button @click="clearResponses">
@@ -111,10 +111,15 @@ button {
     position: fixed;
     bottom: 4rem;
 
-    width: 100%;
+    width: calc(100% - 2rem);
     display: flex;
     justify-content: center;
     z-index: 10;
+    border: 2px solid rgb(69, 133, 136, .5);
+
+    /* border: 2px solid rgba(255, 255, 255, .5); */
+    border-bottom: 0;
+    box-sizing: border-box;
 }
 
 section {

@@ -5,7 +5,8 @@ import CodeBlock from './CodeBlock.vue';
 import Hamburger from './Hamburger.vue';
 interface CustomComponentProps {
     modelValue: string,
-    settingsOpen: boolean
+    settingsOpen: boolean,
+    disabled: boolean,
 }
 const props = defineProps<CustomComponentProps>()
 
@@ -55,7 +56,7 @@ function onSettingsClick() {
                 <div class="input">
                     <input @keyup.enter="onButtonClick" placeholder="ask me something BASED" :value="modelValue"
                         @input="updateValue($event)">
-                    <button :disabled="modelValue == ''" @click="onButtonClick">
+                    <button :disabled="modelValue == '' || disabled" @click="onButtonClick">
                         <Icon style="font-size: 2rem;" icon="carbon:send" />
                     </button>
                 </div>
