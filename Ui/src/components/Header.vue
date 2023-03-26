@@ -6,12 +6,15 @@
 
 <style scoped>
 header {
-    /* position: fixed; */
+    /* background-color: aqua;
+    position: sticky;
+    top: 0;
+    z-index: 10; */
 }
 h1 {
     /* font-family: Arial, Helvetica, sans-serif; */
     font-weight: bold;
-    font-size: 3rem;
+    font-size: 2rem;
     text-align: center;
     color: white;
     margin: 0;

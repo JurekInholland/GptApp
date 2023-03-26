@@ -1,13 +1,15 @@
 ﻿<script setup lang="ts">
 import { Icon } from '@iconify/vue';
-
 import { computed, ref } from 'vue'
 import CodeBlock from './CodeBlock.vue';
+import Hamburger from './Hamburger.vue';
 interface CustomComponentProps {
-    modelValue: string
+    modelValue: string,
+    settingsOpen: boolean
 }
 const props = defineProps<CustomComponentProps>()
 
+const settingsOpen = ref(false)
 
 // const query = ref('')
 
@@ -23,6 +25,7 @@ const props = defineProps<CustomComponentProps>()
 
 const emits = defineEmits({
     'update:modelValue': (value: string) => true,
+    'update:settingsOpen': (value: boolean) => true,
     'submit': () => true,
 })
 function updateValue(event: Event) {
@@ -32,39 +35,62 @@ function updateValue(event: Event) {
 function onButtonClick() {
     emits('submit')
 }
+function onSettingsClick() {
+    settingsOpen.value = !settingsOpen.value
+    emits('update:settingsOpen', settingsOpen.value)
+}
 </script>
 
 <template>
     <div style="position: relative; display: flex;">
         <div class="background">
-            <!-- <CodeBlock :code="query" /> -->
-            <div class="input">
-                <input @keyup.enter="onButtonClick" placeholder="ask me something BASED" :value="modelValue"
-                    @input="updateValue($event)">
-                <button :disabled="modelValue == ''" @click="onButtonClick">
-                    <Icon style="font-size: 2rem;" icon="carbon:send" />
-                </button>
+            <div class="content">
+                <div class="menu">
+                    <Hamburger @change="onSettingsClick" />
+                    <!-- <button class="settings" @click="onSettingsClick">
+                                    <Icon style="font-size: 2rem;" icon="carbon:menu" />
+                                </button> -->
+                </div>
+                <!-- <CodeBlock :code="query" /> -->
+                <div class="input">
+                    <input @keyup.enter="onButtonClick" placeholder="ask me something BASED" :value="modelValue"
+                        @input="updateValue($event)">
+                    <button :disabled="modelValue == ''" @click="onButtonClick">
+                        <Icon style="font-size: 2rem;" icon="carbon:send" />
+                    </button>
+                </div>
             </div>
         </div>
     </div>
     <!-- <p>Tokens: ~{{ tokenCount.toFixed(0) }}</p>
-                            <p>Cost: ~{{ queryCost.toFixed(6) }} €</p> -->
+                                                    <p>Cost: ~{{ queryCost.toFixed(6) }} €</p> -->
 </template>
 
 <style scoped>
+.content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 1280px;
+    flex-grow: 1;
+    flex-basis: 1280px;
+    padding: 0 1rem;
+}
 .background {
     display: flex;
+    justify-content: center;
     align-items: center;
     position: fixed;
     flex-grow: 1;
-    width: 100%;
+    /* width: 100%; */
     /* width: calc(100vw - 2rem); */
     bottom: 0;
     left: 0;
     background-color: rgb(62, 62, 62);
-    /* width: 100%; */
+    width: 100%;
     height: 4rem;
-    /* padding: 0 1rem; */
+    /* padding: 0 2rem; */
 }
 
 input {
@@ -76,7 +102,6 @@ input {
     font-size: 1rem;
     background-color: transparent;
     color: white;
-
 }
 
 input::placeholder {
@@ -85,11 +110,12 @@ input::placeholder {
 }
 
 .input {
-    width: calc(100% - 2rem);
+    width: 100%;
 
     /* flex-grow: 1; */
-    height: auto;
-    max-width: 1280px;
+    /* height: auto; */
+    /* width: calc(100% - 12rem); */
+    /* max-width: calc(1280px - 24rem); */
     max-height: 3rem;
     overflow: hidden;
     /* border-radius: 12px; */
@@ -98,11 +124,14 @@ input::placeholder {
     padding: .5rem 1rem;
     background: rgba(0, 0, 0, 0.33);
     display: flex;
-    margin: 0 auto;
+    /* margin: 0 auto; */
     bottom: 0;
     /* position: sticky;
     bottom: 1rem; */
+    /* margin-right: 1rem; */
     transition: border 0.1s ease-in-out;
+    /* padding-left: 2rem; */
+
 }
 
 .input:focus-within {
@@ -130,4 +159,18 @@ button {
 
 .input:focus-within input::placeholder {
     color: rgba(255, 255, 255, 0.75);
-}</style>
+}
+
+.menu {
+    /* display: block; */
+    width: 3rem;
+    height: 4rem;
+    position: relative;
+}
+
+.settings {
+    margin: 1rem 0;
+    /* position: absolute; */
+    /* left: 1rem; */
+}
+</style>

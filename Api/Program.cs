@@ -1,4 +1,6 @@
 using Api;
+using Models;
+using Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +15,21 @@ builder.Services.AddHttpClient();
 builder.Services.AddSignalR();
 
 builder.Services.AddSingleton<ChatHub>();
+
+builder.Services.AddScoped<IOpenAiService, OpenAiService>();
+builder.Services.AddScoped<ISignalRService, SignalRService>();
+
+var config = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json", true, true)
+    .AddJsonFile("appsettings.Development.json", true, true)
+    .AddEnvironmentVariables()
+    .Build();
+
+builder.Services.Configure<AppConfig>(cfg =>
+{
+    cfg.ApiKey = config.GetValue<string>("OpenAiApiKey") ?? string.Empty;
+    cfg.OrganizationId = config.GetValue<string>("OpenAiOrganization") ?? string.Empty;
+});
 
 var app = builder.Build();
 

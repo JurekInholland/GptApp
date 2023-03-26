@@ -5,6 +5,8 @@ using System.Text.Json.Serialization;
 using Domain;
 using Microsoft.AspNetCore.Mvc;
 using Models;
+using Models.OpenAi;
+using Services;
 
 namespace Api.Controllers;
 
@@ -33,12 +35,29 @@ public class ChatController : ControllerBase
 {
     private readonly ILogger<ChatController> _logger;
     private readonly ChatHub _hub;
+    private readonly IOpenAiService _openAiService;
+    private readonly ISignalRService _signalRService;
 
-    public ChatController(ILogger<ChatController> logger, ChatHub hub)
+    public ChatController(ILogger<ChatController> logger, ChatHub hub, IOpenAiService openAiService, ISignalRService signalRService)
     {
         _logger = logger;
         _hub = hub;
+        _openAiService = openAiService;
+        _signalRService = signalRService;
     }
+
+
+    [HttpPost(nameof(ServiceRequest))]
+    public async Task<IActionResult> ServiceRequest([FromBody] CompletionRequest completion, string? connectionId)
+    {
+        _logger.LogInformation("{RequestMessage} --- {ConnectionId}", completion.Messages[0].Content, completion.Messages[0].Role);
+        var stream = await _openAiService.GetCompletionStream(completion);
+
+        await _signalRService.StreamToClient(connectionId, "update", stream);
+
+        return Ok();
+    }
+
 
     [HttpGet(nameof(StreamResponse))]
     public async Task<IActionResult> StreamResponse(string requestMessage, string connectionId)
@@ -79,10 +98,9 @@ public class ChatController : ControllerBase
         {
             string? line = await reader.ReadLineAsync();
 
-            if (line == "") continue;
+            if (line is null or "") continue;
             if (line == "data: [DONE]")
             {
-                Console.WriteLine("DONE");
                 break;
             }
 
@@ -90,7 +108,7 @@ public class ChatController : ControllerBase
 
             try
             {
-                var cleaned = line?.Replace("data: ", "").Replace("finish_reason", "finishreason");
+                var cleaned = line.Replace("data: ", "").Replace("finish_reason", "finishreason");
                 var doc = JsonDocument.Parse(cleaned);
                 var id = doc.RootElement.GetProperty("id");
 
@@ -140,6 +158,20 @@ public class ChatController : ControllerBase
         Console.WriteLine(result);
         return new OkObjectResult(result);
     }
+
+    [HttpGet(nameof(Engines))]
+    public async Task<IActionResult> Engines()
+    {
+        var client = new HttpClient();
+        client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", "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");
+        client.DefaultRequestHeaders.Add("OpenAI-Organization", "org-JgXRnmTtTXa4MTTZ4VmWDDRN");
+
+        var response = await client.GetAsync("https://api.openai.com/v1/engines");
+        var result = await response.Content.ReadAsStringAsync();
+        return new OkObjectResult(result);
+    }
+
 
     [HttpGet(nameof(Test))]
     public async Task<IActionResult> Test(string requestMessage)

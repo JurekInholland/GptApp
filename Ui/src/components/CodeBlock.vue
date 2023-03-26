@@ -42,7 +42,8 @@ const content = computed(() => {
 
 <template>
   <div style="position: relative;">
-    <h3 class="author">{{ props.response.role === 'bot' ? 'chad gbd' : 'user' }}</h3>
+    <h3 :class="props.response.role === 'user' ? 'green' : 'beige'" class="author">{{ props.response.role === 'bot' ?
+      'chad gbd' : 'user' }}</h3>
     <div :class="props.response.role === 'user' ? 'human' : 'bot'" ref="message" class="message" v-html="content" />
   </div>
 </template>
@@ -54,7 +55,17 @@ const content = computed(() => {
   top: -10px;
   font-size: 1.25rem;
   color: white;
+  text-shadow: 0px 3px 3px rgba(0, 0, 0, 1);
+}
+
+.green {
+  color: var(--color-green);
   /* background-color: #222; */
+}
+
+.beige {
+  color: #eed9c1;
+  /* background-color: #444; */
 }
 
 code {
@@ -88,7 +99,7 @@ code {
 }
 
 .bot {
-  background-color: #444;
+  background-color: #333;
   border: 2px solid rgba(223, 191, 142, .75);
 
 }
@@ -99,12 +110,12 @@ code {
   color: #eed9c1;
   /* font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; */
   font-size: 18px;
-  line-height: 1.5rem;
+  /* line-height: 1.5rem; */
   box-sizing: border-box;
   /* letter-spacing: .2px; */
+  line-height: 28px;
 }
 
 /* .message p {
     max-width: 900px
-} */
-</style>
+} */</style>

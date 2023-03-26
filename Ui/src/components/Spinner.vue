@@ -10,7 +10,7 @@
 <style scoped>
 .lds-ellipsis {
     display: inline-block;
-    position: relative;
+    /* position: relative; */
     width: 80px;
     height: 80px;
 }

@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 
-namespace Api;
+namespace Services;
 
 public class ChatHub : Hub
 {
-
-
     private readonly ILogger<ChatHub> _logger;
 
     public ChatHub(ILogger<ChatHub> logger)

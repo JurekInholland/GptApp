@@ -42,14 +42,19 @@ export const useApiStore = defineStore("api", () => {
   function getResponse(id: string) {
     return responses.value[id];
   }
+  function clearResponses() {
+    responses.value = {};
+  }
 
   return {
     count,
+    responses,
     doubleCount,
     increment,
     updateResponse,
     addUserResponse,
     getResponse,
     sortedResponses,
+    clearResponses,
   };
 });

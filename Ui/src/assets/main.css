@@ -2,6 +2,7 @@
   --bg-color: #282828;
   --color-green: rgb(142, 192, 124);
   --color-green-muted: rgb(142, 192, 124, 0.5);
+  --color-hamburger: rgba(164, 164, 164, 1);
 }
 
 body {
