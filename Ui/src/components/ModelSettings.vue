@@ -120,6 +120,7 @@ button {
     /* border: 2px solid rgba(255, 255, 255, .5); */
     border-bottom: 0;
     box-sizing: border-box;
+    max-width: 1280px;
 }
 
 section {
