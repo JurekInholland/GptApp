@@ -2,14 +2,13 @@
 import { onMounted, ref, watch, nextTick, type Ref, computed } from 'vue'
 import { useSignalR } from '@quangdao/vue-signalr';
 import CodeBlock from '../components/CodeBlock.vue';
-import type { ICompletionMessage, ICompletionRequest, IModelSettings, IWebsocketMessage } from '../types';
+import type { ICompletionMessage, IChatCompletionRequest, IModelSettings, IWebsocketMessage } from '../types';
 import ApiInput from '../components/ApiInput.vue';
 import Spinner from '../components/Spinner.vue';
 import Header from '@/components/Header.vue';
 import ModelSettings from '@/components/ModelSettings.vue';
 import { useApiStore } from "@/stores/api";
-import { defaultSettings } from '@/types';
-import { prompts } from '@/constants';
+import { defaultSettings, prompts } from '@/constants';
 import gsap from 'gsap';
 const store = useApiStore();
 
@@ -137,8 +136,9 @@ function scroll() {
     window.scrollTo({ top: window.screenX + 32 }); // , behavior: 'smooth'
 }
 
-function createCompletionRequest(): ICompletionRequest {
+function createCompletionRequest(): IChatCompletionRequest {
     let messages: ICompletionMessage[] = [];
+    console.log("SP", modelSettings.value.systemPrompt)
     // System prompt
     if (modelSettings.value.systemPrompt != 'default') {
         const prompt = prompts[modelSettings.value.systemPrompt];
@@ -158,7 +158,7 @@ function createCompletionRequest(): ICompletionRequest {
         }));
     }
 
-    const request: ICompletionRequest = {
+    const request: IChatCompletionRequest = {
         model: modelSettings.value.model,
         temperature: modelSettings.value.temperature,
         max_tokens: modelSettings.value.maxTokens,

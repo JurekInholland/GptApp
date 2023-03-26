@@ -35,21 +35,22 @@ function clearResponses() {
         <section>
             <label for="model">Model
                 <select v-model="modelValue.model" name="model" id="">
-                    <option v-for="[key, val] in Object.entries(models)" :value="key">{{ val }}</option>
+                    <option v-for="[key, val] in Object.entries(models)" :value="key" :disabled="key != 'gpt-3.5-turbo'">{{
+                        val }}</option>
                     <!-- <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
-                                                        <option value="babbage">babbage</option>
-                                                        <option value="davinci">davinci</option>
-                                            <option value="ada">ada</option> -->
+                                                                <option value="babbage">babbage</option>
+                                                                <option value="davinci">davinci</option>
+                                                    <option value="ada">ada</option> -->
                 </select>
             </label>
-            <label for="system">System Prompt
+            <label for="system">Persona
             <select v-model="modelValue.systemPrompt" name="system" id="">
 
-                <option v-for="prompt in Object.keys(prompts)" :value="prompt">{{ prompt }}</option>
+                <option v-for="[key, prompt] in Object.entries(prompts)" :value="key">{{ prompt.name }}</option>
 
                 <!-- <option value="default">default</option>
-                                                <option value="chadgbd">chadgbd</option>
-                                                <option value="system3">system3</option> -->
+                                                        <option value="chadgbd">chadgbd</option>
+                                                        <option value="system3">system3</option> -->
                 </select>
             </label>
             <label for="temp">Temperature: {{ modelValue.temperature }}
@@ -75,11 +76,11 @@ function clearResponses() {
                 </div>
             </label>
             <!-- <label for="topk">Top k
-                                                                <input name="topk" type="number" min="1" max="100">
-                                                            </label>
-                                                            <label for="topp">Top p
-                                                                <input name="topp" type="number" min="0" max="1" step="0.01">
-                                                            </label> -->
+                                                                        <input name="topk" type="number" min="1" max="100">
+                                                                    </label>
+                                                                    <label for="topp">Top p
+                                                                        <input name="topp" type="number" min="0" max="1" step="0.01">
+                                                                    </label> -->
             <label>Clear History
                 <div class="center">
                     <button @click="clearResponses">
@@ -96,6 +97,7 @@ function clearResponses() {
     display: flex;
     justify-content: center;
 }
+
 button {
     color: red;
     font-size: 1.5rem;

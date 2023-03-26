@@ -1,17 +1,17 @@
-interface IWebsocketMessage {
+export interface IWebsocketMessage {
   id: string;
   content: string;
   finishReason: string;
 }
 
-interface IAPIResponse {
+export interface IAPIResponse {
   message: string;
   status: string;
   date: string;
   role: string;
 }
 
-interface IModelSettings {
+export interface IModelSettings {
   model: string;
   systemPrompt: string;
   includeHistory: boolean;
@@ -23,6 +23,7 @@ interface IModelSettings {
 export interface ICompletionMessage {
   role: string;
   content: string;
+  name?: string;
 }
 
 export interface IPrompt {
@@ -32,7 +33,11 @@ export interface IPrompt {
   description: string;
 }
 
-export interface ICompletionRequest {
+
+/* 
+* This is the request body for the OpenAI API Proxy
+*/
+export interface IChatCompletionRequest {
   model: string;
   messages: ICompletionMessage[];
   stream: boolean;
@@ -42,15 +47,3 @@ export interface ICompletionRequest {
   presence_penalty: number;
   frequency_penalty: number;
 }
-
-export const defaultSettings: IModelSettings = {
-  model: "gpt-3.5-turbo",
-  systemPrompt: "default",
-  includeHistory: true,
-  temperature: 0.7,
-  maxTokens: 100,
-  frequencyPenalty: 0.0,
-  presencePenalty: 0.0,
-} as IModelSettings;
-
-export type { IWebsocketMessage, IAPIResponse, IModelSettings };
