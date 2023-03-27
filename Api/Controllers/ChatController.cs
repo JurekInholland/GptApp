@@ -10,7 +10,7 @@ using Services;
 
 namespace Api.Controllers;
 
-public class OpenAICompletion
+public class OpenAiCompletion
 {
     public ApiMessage[] Messages { get; set; } = null!;
     public double Temperature { get; set; }
@@ -56,6 +56,7 @@ public class ChatController : ControllerBase
 
         await _signalRService.StreamToClient(connectionId, "update", stream);
 
+
         return Ok();
     }
 
@@ -64,7 +65,7 @@ public class ChatController : ControllerBase
     public async Task<IActionResult> StreamResponse(string requestMessage, string connectionId)
     {
         _logger.LogInformation("{RequestMessage} --- {ConnectionId}", requestMessage, connectionId);
-        OpenAICompletion completion = new OpenAICompletion
+        OpenAiCompletion completion = new OpenAiCompletion
         {
             Messages = new[] {Prompts.BasedSystemMessage, new() {Content = requestMessage, Role = "user"}},
             Temperature = 0.5,

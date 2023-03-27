@@ -33,10 +33,9 @@ export interface IPrompt {
   description: string;
 }
 
-
-/* 
-* This is the request body for the OpenAI API Proxy
-*/
+/**
+ * This is the request body for the OpenAI API Proxy
+ */
 export interface IChatCompletionRequest {
   model: string;
   messages: ICompletionMessage[];
@@ -46,4 +45,18 @@ export interface IChatCompletionRequest {
   temperature: number;
   presence_penalty: number;
   frequency_penalty: number;
+}
+
+export enum ImageSize {
+  Small = "256x256",
+  Medium = "512x512",
+  Large = "1024x1024",
+}
+
+/**
+ * Request body for the image generation proxy endpoint
+ */
+export interface IImageRequest {
+  prompt: string;
+  size: ImageSize;
 }

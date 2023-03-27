@@ -9,6 +9,11 @@ const router = createRouter({
       name: "home",
       component: () => import("../views/ChatView.vue"),
     },
+    {
+      path: "/image",
+      name: "image",
+      component: () => import("../views/ImageView.vue"),
+    },
     // {
     //   path: '/about',
     //   name: 'about',

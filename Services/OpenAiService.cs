@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using Domain;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Models;
@@ -46,8 +47,35 @@ public class OpenAiService : IOpenAiService
         var json = JsonSerializer.Serialize(request, _serializerOptions);
         // fluent validation
 
-        var response = await MakePostRequest(GetClient(), "https://api.openai.com/v1/chat/completions", json);
+        var response = await MakePostRequest(GetClient(), OpenAiUrls.ChatCompletionUrl, json);
         var stream = await response.Content.ReadAsStreamAsync();
+
+        // var test = await response.Content.ReadAsStringAsync();
+
+
+        // var headers = response.Headers;
+        return stream;
+        // return new MemoryStream(Encoding.UTF8.GetBytes(test));
+    }
+
+    public async Task<Stream> GetImage(ImageRequest request)
+    {
+        var json = JsonSerializer.Serialize(request, _serializerOptions);
+
+        var response = await MakePostRequest(GetClient(), OpenAiUrls.ImageUrl, json);
+        var data = await response.Content.ReadAsStringAsync();
+
+        var doc = JsonDocument.Parse(data);
+
+        var url = doc.RootElement.GetProperty("data")[0].GetProperty("url").ToString();
+
+        // var url = JsonSerializer.Deserialize(rootObject.data.url.ToString(), typeof(string), _serializerOptions) as string;
+
+        using var client = new HttpClient();
+        var imageResponse = await client.GetAsync(url);
+        var stream = await imageResponse.Content.ReadAsStreamAsync();
+
+
         return stream;
     }
 

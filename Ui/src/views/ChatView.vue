@@ -45,8 +45,8 @@ function isScrolledToBottom() {
     const scrollTop = scrollBar.value!.scrollEl.scrollTop;
     const scrollHeight = scrollBar.value!.scrollEl.scrollHeight;
     const clientHeight = scrollBar.value!.scrollEl.clientHeight;
-    console.log("is scrolled to bottom", scrollTop, clientHeight, scrollHeight, scrollTop + clientHeight >= scrollHeight)
-    return scrollTop + clientHeight >= scrollHeight;
+    console.log("is scrolled to bottom", scrollTop, clientHeight, scrollHeight, scrollTop + clientHeight >= scrollHeight * 0.9)
+    return scrollTop + clientHeight >= scrollHeight * 0.98;
 }
 
 async function repeatedScroll() {
@@ -159,8 +159,11 @@ const submit = async () => {
 }
 
 function scroll() {
-    console.log(scrollBar.value)
-    scrollBar.value!.scrollEl.scrollTo({ top: scrollBar.value!.scrollEl.scrollHeight + 1000, behavior: 'smooth' })
+    // console.log(scrollBar.value)
+    if (!isScrolledToBottom()) {
+        return;
+    }
+    scrollBar.value!.scrollEl.scrollTo({ top: scrollBar.value!.scrollEl.scrollHeight + 232 })
     // scrollBar.value!.scrollEl.scrollTop = scrollBar.value!.scrollEl.scrollHeight + 1000;
     // window.scrollTo({ top: window.screenX + 32 }); // , behavior: 'smooth'
 }
@@ -204,7 +207,7 @@ function createCompletionRequest(): IChatCompletionRequest {
 </script>
 
 <template>
-    <custom-scrollbar ref="scrollBar" :style="{ width: '100vw', height: 'calc(100vh - 4rem)' }">
+    <custom-scrollbar ref="scrollBar" :style="{ width: '100vw', height: 'calc(100svh - 4rem)' }">
 
         <div class="top">
             <!-- <button @click="scroll">scrl</button> -->
@@ -220,7 +223,8 @@ function createCompletionRequest(): IChatCompletionRequest {
                 <ModelSettings ref="settingsContainer" v-model="modelSettings" v-if="settingsOpen" />
             </Transition>
         </div>
-        <ApiInput :disabled="!connected" v-model:model-value="userInput" v-model:settings-open="settingsOpen" @submit="submit" />
+        <ApiInput :disabled="!connected" v-model:model-value="userInput" v-model:settings-open="settingsOpen"
+            @submit="submit" />
     </custom-scrollbar>
 </template>
 

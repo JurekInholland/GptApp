@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Text;
+using System.Text.Json;
 using Domain;
 using Microsoft.Extensions.Logging;
 using Models;
@@ -28,6 +29,8 @@ public class SignalRService : ISignalRService
 
         using StreamReader reader = new StreamReader(stream);
         WebsocketResponse res = new WebsocketResponse();
+
+        StringBuilder sb = new StringBuilder();
 
         while (!reader.EndOfStream)
         {
@@ -68,6 +71,7 @@ public class SignalRService : ISignalRService
                 Console.WriteLine(line);
             }
 
+            sb.Append(res.Content);
             try
             {
                 await _hub.SendObject(connectionId, callbackName, res);
