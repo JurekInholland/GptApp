@@ -203,6 +203,8 @@ function countIncludedMessages(characters: number = 0) {
 }
 
 function createCompletionRequest(): IChatCompletionRequest {
+    const test = "asd";
+    debugger;
     let messages: ICompletionMessage[] = [];
     // System prompt
     if (modelSettings.value.systemPrompt != 'default') {
@@ -249,7 +251,7 @@ function createCompletionRequest(): IChatCompletionRequest {
             <p v-if="!connected">lost connection... (press F5)</p>
         </div>
         <!-- todo: v-auto-animate -->
-        <p>{{ includedMessagesCount }}MSG</p>
+        <!-- <p>{{ includedMessagesCount }}MSG</p> -->
         <div ref="section" class="cont" :style="{ 'padding-bottom': offset + 'px' }">
             <div class="sec">
                 <CodeBlock style="block" v-for="(item, i) in store.sortedResponses"

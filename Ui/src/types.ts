@@ -19,6 +19,7 @@ export interface IModelSettings {
   maxTokens: number;
   presencePenalty: number;
   frequencyPenalty: number;
+  customPrompt: string;
 }
 export interface ICompletionMessage {
   role: string;

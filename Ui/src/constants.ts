@@ -8,6 +8,7 @@ export const defaultSettings: IModelSettings = {
   maxTokens: 500,
   frequencyPenalty: 0.0,
   presencePenalty: 0.0,
+  customPrompt: "",
 } as IModelSettings;
 
 export const models: { [key: string]: string } = {
@@ -25,6 +26,12 @@ export const prompts: { [key: string]: IPrompt } = {
     slug: "default",
     prompt: "",
     description: "The default (empty) prompt",
+  },
+  custom: {
+    name: "Custom",
+    slug: "custom",
+    prompt: "You are a helpful assistant.",
+    description: "A custom prompt",
   },
   chadGbd: {
     name: "Chad GBD",

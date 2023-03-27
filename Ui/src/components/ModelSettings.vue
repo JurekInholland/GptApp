@@ -1,8 +1,7 @@
-
 <script setup lang="ts">
 import { Icon } from '@iconify/vue';
 import type { IModelSettings } from '@/types';
-import { watch } from 'vue';
+import { onMounted, watch } from 'vue';
 import { models, prompts } from '@/constants';
 import { useApiStore } from '@/stores/api';
 
@@ -28,6 +27,10 @@ function updateValue(event: Event) {
 function clearResponses() {
     store.clearResponses()
 }
+onMounted(() => {
+
+    // console.log(props.modelValue)
+})
 
 </script>
 <template>
@@ -37,20 +40,17 @@ function clearResponses() {
                 <select v-model="modelValue.model" name="model" id="">
                     <option v-for="[key, val] in Object.entries(models)" :value="key" :disabled="key != 'gpt-3.5-turbo'">{{
                         val }}</option>
-                    <!-- <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
-                                                                            <option value="babbage">babbage</option>
-                                                                            <option value="davinci">davinci</option>
-                                                                <option value="ada">ada</option> -->
+
                 </select>
             </label>
             <label for="system">Persona
-            <select v-model="modelValue.systemPrompt" name="system" id="">
+                <select v-model="modelValue.systemPrompt" name="system" id="">
 
-                <option v-for="[key, prompt] in Object.entries(prompts)" :value="key">{{ prompt.name }}</option>
+                    <option v-for="[key, prompt] in Object.entries(prompts)" :value="key">{{ prompt.name }}</option>
 
-                <!-- <option value="default">default</option>
-                                                                    <option value="chadgbd">chadgbd</option>
-                                                                    <option value="system3">system3</option> -->
+                    <!-- <option value="default">default</option>
+                                                                                                                <option value="chadgbd">chadgbd</option>
+                                                                                                                <option value="system3">system3</option> -->
                 </select>
             </label>
             <label for="temp">Temperature: {{ modelValue.temperature }}
@@ -75,18 +75,16 @@ function clearResponses() {
                     <input v-model="modelValue.includeHistory" name="history" type="checkbox">
                 </div>
             </label>
-            <!-- <label for="topk">Top k
-                                                                                    <input name="topk" type="number" min="1" max="100">
-                                                                                </label>
-                                                                                <label for="topp">Top p
-                                                                                    <input name="topp" type="number" min="0" max="1" step="0.01">
-                                                                                </label> -->
+
             <label @click.prevent="">Clear History
                 <div class="center">
                     <button @click="clearResponses">
                         <Icon icon="grommet-icons:clear" />
                     </button>
                 </div>
+            </label>
+            <label class="text">Custom Prompt
+                <textarea v-model="modelValue.customPrompt" name="prompt"></textarea>
             </label>
         </section>
     </div>
@@ -96,6 +94,27 @@ function clearResponses() {
 .center {
     display: flex;
     justify-content: center;
+}
+
+textarea {
+    width: 100%;
+    resize: vertical;
+    max-height: 300px;
+    min-height: 96px;
+    padding: 1rem;
+    font-family: Roboto Mono, monospace;
+    /* margin: 1rem; */
+    color: white;
+    border: none;
+    background-color: rgba(255, 255, 255, .05);
+}
+textarea:focus-visible {
+    border-top: 1px solid transparent;
+}
+.text {
+    flex-basis: 100%;
+    flex-wrap: nowrap;
+    padding-left: 1rem;
 }
 
 button {
