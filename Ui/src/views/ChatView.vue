@@ -27,6 +27,8 @@ const settingsOpen = ref(false);
 const connected: Ref<boolean> = ref(true);
 const scrollBar = ref<{ scrollEl: HTMLDivElement; }>();
 
+const includedMessagesCount = ref(0);
+
 watch(settingsOpen, async (val) => {
     await nextTick();
     if (val) {
@@ -45,8 +47,7 @@ function isScrolledToBottom() {
     const scrollTop = scrollBar.value!.scrollEl.scrollTop;
     const scrollHeight = scrollBar.value!.scrollEl.scrollHeight;
     const clientHeight = scrollBar.value!.scrollEl.clientHeight;
-    console.log("is scrolled to bottom", scrollTop, clientHeight, scrollHeight, scrollTop + clientHeight >= scrollHeight * 0.9)
-    return scrollTop + clientHeight >= scrollHeight * 0.98;
+    return scrollTop + clientHeight >= Math.floor(scrollHeight * 0.9);
 }
 
 async function repeatedScroll() {
@@ -71,8 +72,29 @@ watch(result, async (val) => {
     // section.value.scrollIntoView( { behavior: "smooth", block: "end" });
 })
 
+const systemPromptText = computed(() => {
+    return prompts[modelSettings.value.systemPrompt].prompt;
+})
+
+watch(() => store.sortedResponses, async () => {
+    // await nextTick();
+    includedMessagesCount.value = countIncludedMessages(systemPromptText.value.length);
+})
+watch(modelSettings.value, () => {
+    includedMessagesCount.value = countIncludedMessages(systemPromptText.value.length);
+});
+
+watch(userInput, () => {
+    includedMessagesCount.value = countIncludedMessages(systemPromptText.value.length);
+})
+
+
+
 onMounted(async () => {
+    includedMessagesCount.value = countIncludedMessages(systemPromptText.value.length);
+
     await nextTick();
+
     // const con = signalr.connection.connectionId;
 
     setTimeout(async () => {
@@ -168,9 +190,20 @@ function scroll() {
     // window.scrollTo({ top: window.screenX + 32 }); // , behavior: 'smooth'
 }
 
+function countIncludedMessages(characters: number = 0) {
+    const messages = store.sortedResponses.slice();
+
+    let count = 0;
+    while (messages.length > 0 && characters + messages[messages.length - 1].message.length + userInput.value.length < 3072) {
+        const message = messages.pop();
+        characters += message?.message.length ?? 0;
+        count++;
+    }
+    return count;
+}
+
 function createCompletionRequest(): IChatCompletionRequest {
     let messages: ICompletionMessage[] = [];
-    console.log("SP", modelSettings.value.systemPrompt)
     // System prompt
     if (modelSettings.value.systemPrompt != 'default') {
         const prompt = prompts[modelSettings.value.systemPrompt];
@@ -179,10 +212,11 @@ function createCompletionRequest(): IChatCompletionRequest {
             content: prompt.prompt,
         });
     }
+    const numberOfMessages = countIncludedMessages(messages.reduce((acc, cur) => acc + cur.content.length, 0));
 
     // Message history
     if (modelSettings.value.includeHistory) {
-        messages = messages.concat(store.sortedResponses.map((item) => {
+        messages = messages.concat(store.sortedResponses.slice(numberOfMessages * -1).map((item) => {
             return {
                 role: item.role === 'bot' ? 'assistant' : 'user',
                 content: item.message,
@@ -215,9 +249,12 @@ function createCompletionRequest(): IChatCompletionRequest {
             <p v-if="!connected">lost connection... (press F5)</p>
         </div>
         <!-- todo: v-auto-animate -->
+        <p>{{ includedMessagesCount }}MSG</p>
         <div ref="section" class="cont" :style="{ 'padding-bottom': offset + 'px' }">
             <div class="sec">
-                <CodeBlock style="block" v-for="item in store.sortedResponses" :response="item" :key="item.message" />
+                <CodeBlock style="block" v-for="(item, i) in store.sortedResponses"
+                    :class="store.sortedResponses.length - (i + 1) < includedMessagesCount ? 'ok' : 'grey'" :response="item"
+                    :key="item.message" />
             </div>
             <Transition>
                 <ModelSettings ref="settingsContainer" v-model="modelSettings" v-if="settingsOpen" />
@@ -229,6 +266,10 @@ function createCompletionRequest(): IChatCompletionRequest {
 </template>
 
 <style scoped>
+.grey {
+    opacity: .75;
+}
+
 .top {
     display: flex;
     justify-content: center;
