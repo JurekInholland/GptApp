@@ -21,10 +21,17 @@ builder.Services.AddScoped<IOpenAiService, OpenAiService>();
 builder.Services.AddScoped<ISignalRService, SignalRService>();
 builder.Services.AddSingleton<ITokenizerService, TokenizerService>();
 
-var config = new ConfigurationBuilder()
-    .AddEnvironmentVariables()
-    .Build();
+var cfgBuilder = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json", true, true)
+    .AddEnvironmentVariables();
 
+if (builder.Environment.IsDevelopment())
+{
+    cfgBuilder.AddJsonFile("appsettings.Development.json", true, true);
+    cfgBuilder.AddUserSecrets<Program>();
+}
+
+var config = cfgBuilder.Build();
 
 builder.Services.Configure<AppConfig>(cfg =>
 {
