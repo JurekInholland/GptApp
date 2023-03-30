@@ -1,5 +1,5 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
-RUN apt-get update -y && apt-get install python3.9 libpython3.9 -y
+RUN apt-get update -y && apt-get install python3.9 libpython3.9 python3-pip -y
 RUN pip install tiktoken
 WORKDIR /app
 #EXPOSE 80
