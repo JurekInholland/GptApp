@@ -9,6 +9,19 @@ export interface IAPIResponse {
   status: string;
   date: string;
   role: string;
+  included: boolean;
+  tokenCount: number;
+}
+export interface ITokenResponse {
+  characterCount: number;
+  tokenCount: number;
+  tokens: number[];
+}
+export interface ITokenCount {
+  systemPromptTokens: number;
+  queryTokens: number;
+  historyTokens: number;
+  totalTokens: number;
 }
 
 export interface IModelSettings {

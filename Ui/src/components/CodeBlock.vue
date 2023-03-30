@@ -5,6 +5,7 @@ import 'highlight.js/styles/base16/gruvbox-dark-medium.css';
 
 import { computed, ref, watch } from 'vue';
 import type { IAPIResponse } from '@/types';
+import { Icon } from '@iconify/vue';
 
 const message = ref();
 
@@ -35,25 +36,112 @@ const md = Markdown({
 // md.use(mdBr);
 
 const content = computed(() => {
-  return md.render(props.response.message.replaceAll("based", "`based`").replaceAll("Based", "`Based`"));
+  let message = "";
+  let dots = "";
+  if (props.response.status === 'incomplete') {
+    dots = " ...";
+    message = "<p style='font-style: italic; color: #d75f5f'><i>Max. token limit reached.</i></p>"
+  }
+  return md.render(props.response.message.replaceAll("based", "`based`").replaceAll("Based", "`Based`") + dots) + message;
 });
+
+const toggleInclusion = () => {
+  props.response.included = !props.response.included;
+};
+
 </script>
 
 
 <template>
-  <div style="position: relative;">
-    <h3 :class="props.response.role === 'user' ? 'green' : 'beige'" class="author">{{ props.response.role === 'bot' ?
-      'chad gbd' : 'user' }}</h3>
-    <div :class="props.response.role === 'user' ? 'human' : 'bot'" ref="message" class="message" v-html="content" />
+  <div class="container" :class="[response.included ? '' : 'hidden', props.response.role === 'user' ? 'green' : 'beige']"
+    style="position: relative;">
+    <div class="message" :class="props.response.role === 'user' ? 'human' : 'bot'">
+      <div class="top-bar">
+        <p class="author">{{ props.response.role === 'bot' ?
+          'chad gbd' : 'user' }}</p>
+        <div class="right-section">
+          <p :style="response.tokenCount === null ? 'opacity: 0;' : ''" :class="response.included ? '' : 'hidden'">{{
+            response.tokenCount }} tokens</p>
+          <button @click="toggleInclusion">
+            <Icon :icon="response.included ? 'mdi:hide' : 'mdi:show'" />
+          </button>
+
+        </div>
+      </div>
+      <div ref="message" v-html="content" />
+    </div>
   </div>
 </template>
-<style>
+<style >
+.container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: -1;
+  justify-content: space-between;
+  height: 1.5rem;
+  padding-top: 1rem;
+
+}
+
+.right-section {
+  display: flex;
+  flex-direction: row;
+  /* justify-content: space-between; */
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  line-height: unset;
+}
+
+.right-section p {
+  margin-top: .25rem;
+  color: unset;
+  opacity: .5;
+  font-size: .8rem;
+  text-decoration: none !important;
+  transition: all .2 ease;
+}
+
+p.hidden {
+  opacity: .1 !important;
+}
+
+button {
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, .1);
+
+}
+
+.hidden button {
+  color: rgba(255, 255, 255, .5);
+
+}
+
+button:hover {
+  color: rgba(255, 255, 255, .75);
+}
+
+/* .grey button {
+  opacity: 0;
+  pointer-events: 0;
+} */
+
 .author {
-  position: absolute;
+  display: flex;
   margin: 0;
   padding: 0;
-  top: -10px;
-  font-size: 1.25rem;
+  /* position: absolute;
+
+  top: -10px; */
+  /* font-size: 1.25rem; */
+  font-weight: bold;
   color: white;
   text-shadow: 0px 3px 3px rgba(0, 0, 0, .75);
 }
@@ -106,17 +194,37 @@ code {
 
 .message {
   /* border-radius: 25px; */
-  padding: .1rem 1rem;
-  color: #eed9c1;
+  padding: .1rem .75rem;
+  /* color: #eed9c1; */
   /* font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; */
   font-size: 18px;
   /* line-height: 1.5rem; */
   box-sizing: border-box;
   /* letter-spacing: .2px; */
   line-height: 28px;
+  transition: all .2s ease;
+
 }
 
-/* .message p {
-    max-width: 900px
-} */
+
+.hidden .message,
+.hidden .author,
+.hidden p {
+  text-decoration: line-through;
+  /* opacity: .9; */
+  opacity: .33;
+  /* text-decoration-color: rgb(238, 217, 193);
+  color: rgba(238, 217, 193, .5);
+  border-color: rgba(238, 217, 193, .33); */
+  /* background-color: rgba(255, 255, 255,.1) !important; */
+}
+
+:deep(.message p) {
+  max-width: calc(100% - 1.5rem);
+  padding-top: .33rem;
+}
+
+:deep(span.span) {
+  color: red !important;
+}
 </style>

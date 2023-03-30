@@ -19,6 +19,7 @@ builder.Services.AddSingleton<ChatHub>();
 
 builder.Services.AddScoped<IOpenAiService, OpenAiService>();
 builder.Services.AddScoped<ISignalRService, SignalRService>();
+builder.Services.AddSingleton<ITokenizerService, TokenizerService>();
 
 var config = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", true, true)
@@ -30,6 +31,7 @@ builder.Services.Configure<AppConfig>(cfg =>
 {
     cfg.ApiKey = config.GetValue<string>("OpenAiApiKey") ?? string.Empty;
     cfg.OrganizationId = config.GetValue<string>("OpenAiOrganization") ?? string.Empty;
+    cfg.PythonPath = config.GetValue<string>("PythonPath") ?? "/var/lib/python";
 });
 
 var app = builder.Build();

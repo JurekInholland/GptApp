@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue';
 import type { IModelSettings } from '@/types';
-import { onMounted, watch } from 'vue';
+import { onMounted, watch, ref } from 'vue';
 import { models, prompts } from '@/constants';
 import { useApiStore } from '@/stores/api';
 
@@ -14,9 +14,14 @@ const props = defineProps<CustomComponentProps>()
 
 const emits = defineEmits(['update:modelValue'])
 
-
+const customPromptShown = ref(props.modelValue.systemPrompt === "custom" ? true : false);
 watch(props, () => {
-    // console.log(props.modelValue)
+    if (props.modelValue.systemPrompt === "custom") {
+        customPromptShown.value = true;
+    }
+    else {
+        customPromptShown.value = false;
+    }
     emits('update:modelValue', props.modelValue)
 })
 
@@ -49,8 +54,8 @@ onMounted(() => {
                     <option v-for="[key, prompt] in Object.entries(prompts)" :value="key">{{ prompt.name }}</option>
 
                     <!-- <option value="default">default</option>
-                                                                                                                <option value="chadgbd">chadgbd</option>
-                                                                                                                <option value="system3">system3</option> -->
+                                                                                                                                                            <option value="chadgbd">chadgbd</option>
+                                                                                                                                                            <option value="system3">system3</option> -->
                 </select>
             </label>
             <label for="temp">Temperature: {{ modelValue.temperature }}
@@ -83,38 +88,84 @@ onMounted(() => {
                     </button>
                 </div>
             </label>
-            <label class="text">Custom Prompt
-                <textarea v-model="modelValue.customPrompt" name="prompt"></textarea>
-            </label>
+            <Transition>
+                <label v-if="customPromptShown" class="text">Custom Prompt
+                    <custom-scrollbar class="scroll" style="width: 100%; height: 100%;">
+                        <textarea style="width: 100%;" v-model="modelValue.customPrompt" name="prompt"></textarea>
+                    </custom-scrollbar>
+                </label>
+            </Transition>
         </section>
     </div>
 </template>
 
+
 <style scoped>
+.v-enter-active,
+.v-leave-active {
+    transition: transform .5s ease;
+    overflow: hidden;
+    height: auto;
+}
+
+.v-enter-from,
+.v-leave-to {
+    transform: translateY(100%);
+}
+
+:deep(.scrollbar__wrapper .scrollbar__content) {
+    height: 100%;
+}
+
+
+.text>div:first-of-type {
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+
+.scroll {
+    display: flex;
+    flex-grow: 1;
+    width: 100%;
+}
+
 .center {
     display: flex;
     justify-content: center;
 }
 
 textarea {
+    /* overflow: auto; */
+    box-sizing: border-box;
+    display: block;
     width: 100%;
-    resize: vertical;
-    max-height: 300px;
-    min-height: 96px;
-    padding: 1rem;
+    height: 100%;
+    /* height: 300px; */
+    /* height: 200px; */
+    /* resize: vertical; */
+    padding: .75rem 1rem;
     font-family: Roboto Mono, monospace;
+    font-size: 1rem;
+    resize: none;
     /* margin: 1rem; */
-    color: white;
+    color: rgba(255, 255, 255, .75);
     border: none;
     background-color: rgba(255, 255, 255, .05);
+    border: 2px solid rgba(255, 255, 255, .25);
 }
+
 textarea:focus-visible {
-    border-top: 1px solid transparent;
+    outline: none !important;
+    border: 2px solid var(--color-green-muted);
 }
+
 .text {
+    width: 100%;
     flex-basis: 100%;
-    flex-wrap: nowrap;
-    padding-left: 1rem;
+    height: 300px;
+    /* overflow: scroll; */
+    /* padding-left: 1rem; */
 }
 
 button {
@@ -134,8 +185,8 @@ button {
     display: flex;
     justify-content: center;
     z-index: 10;
-    border: 2px solid rgb(69, 133, 136, .5);
-
+    /* border: 2px solid rgb(69, 133, 136, 1); */
+    border: 2px solid #458588;
     /* border: 2px solid rgba(255, 255, 255, .5); */
     border-bottom: 0;
     box-sizing: border-box;
@@ -143,7 +194,7 @@ button {
 }
 
 section {
-    width: calc(100vw - 2rem);
+    /* width: calc(100vw - 4rem); */
     display: flex;
     gap: 1.5rem;
     /* align-items: flex-end; */
@@ -177,6 +228,6 @@ label {
 
 label :nth-child(1) {
     /* background-color: red; */
-    overflow: hidden;
+    /* overflow: hidden; */
 }
 </style>

@@ -42,6 +42,16 @@ public class OpenAiService : IOpenAiService
         _config = config.Value;
     }
 
+    public async Task<string> GetCompletion(CompletionRequest request)
+    {
+        var json = JsonSerializer.Serialize(request, _serializerOptions);
+        // fluent validation
+
+        var response = await MakePostRequest(GetClient(), OpenAiUrls.ChatCompletionUrl, json);
+        var result = await response.Content.ReadAsStringAsync();
+        return result;
+    }
+
     public async Task<Stream> GetCompletionStream(CompletionRequest request)
     {
         var json = JsonSerializer.Serialize(request, _serializerOptions);

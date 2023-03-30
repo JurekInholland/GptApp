@@ -8,7 +8,7 @@ export const defaultSettings: IModelSettings = {
   maxTokens: 500,
   frequencyPenalty: 0.0,
   presencePenalty: 0.0,
-  customPrompt: "",
+  customPrompt: "You are a helpful assistant.",
 } as IModelSettings;
 
 export const models: { [key: string]: string } = {

@@ -7,6 +7,7 @@ interface CustomComponentProps {
     modelValue: string,
     settingsOpen: boolean,
     disabled: boolean,
+    tokens: number,
 }
 const props = defineProps<CustomComponentProps>()
 
@@ -49,13 +50,14 @@ function onSettingsClick() {
                 <div class="menu">
                     <Hamburger @change="onSettingsClick" />
                     <!-- <button class="settings" @click="onSettingsClick">
-                                            <Icon style="font-size: 2rem;" icon="carbon:menu" />
-                                        </button> -->
+                                                                <Icon style="font-size: 2rem;" icon="carbon:menu" />
+                                                            </button> -->
                 </div>
                 <!-- <CodeBlock :code="query" /> -->
                 <div class="input">
                     <input @keyup.enter="onButtonClick" placeholder="ask me something BASED" :value="modelValue"
                         @input="updateValue($event)">
+                    <p :class="modelValue === '' ? 'hidden' : ''">~ {{ tokens }} tokens</p>
                     <button :disabled="modelValue == '' || disabled" @click="onButtonClick">
                         <Icon style="font-size: 2rem;" icon="carbon:send" />
                     </button>
@@ -64,10 +66,25 @@ function onSettingsClick() {
         </div>
     </div>
     <!-- <p>Tokens: ~{{ tokenCount.toFixed(0) }}</p>
-                                                            <p>Cost: ~{{ queryCost.toFixed(6) }} €</p> -->
+                                                                                <p>Cost: ~{{ queryCost.toFixed(6) }} €</p> -->
 </template>
 
 <style scoped>
+.input p {
+    white-space: nowrap;
+    margin: 0;
+    line-height: 1.75rem;
+    color: var(--color-green-muted);
+    opacity: .75;
+    transition: all 0.2s ease;
+
+}
+
+.input p.hidden {
+    /* opacity: 0; */
+    color: transparent;
+}
+
 .content {
     display: flex;
     justify-content: center;
@@ -104,7 +121,7 @@ input {
     outline: none;
     font-size: 1rem;
     background-color: transparent;
-    color: white;
+    color: rgba(255, 255, 255, 0.86);
 }
 
 input::placeholder {
@@ -134,6 +151,8 @@ input::placeholder {
     /* margin-right: 1rem; */
     transition: border 0.1s ease-in-out;
     /* padding-left: 2rem; */
+    gap: .5rem;
+
 
 }
 
@@ -142,7 +161,7 @@ input::placeholder {
 
 }
 
-button:focus-within > .input {
+button:focus-within>.input {
     border: 2px solid var(--color-green);
 }
 
@@ -154,12 +173,15 @@ button {
 .input:focus-within button {
     color: var(--color-green-muted);
 }
+
 .input button {
     height: 2rem;
 }
+
 .input button svg {
     transform: translateY(-2px);
 }
+
 .input button:hover {
     color: var(--color-green);
 }
@@ -179,11 +201,10 @@ button {
     width: 3rem;
     height: 4rem;
     position: relative;
+    flex-shrink: 0;
 }
 
 .settings {
     margin: 1rem 0;
-    /* position: absolute; */
-    /* left: 1rem; */
 }
 </style>

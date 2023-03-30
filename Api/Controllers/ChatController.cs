@@ -50,14 +50,16 @@ public class ChatController : ControllerBase
     [HttpPost(nameof(ServiceRequest))]
     public async Task<IActionResult> ServiceRequest([FromBody] CompletionRequest completion, string? connectionId)
     {
+        // completion.Stream = false;
+        if (connectionId is null || completion.Messages.Length is 0) return BadRequest("Connection Id or Messages are null");
         _logger.LogInformation("{RequestMessage} --- {ConnectionId}", completion.Messages[0].Content, completion.Messages[0].Role);
-        if (connectionId is null) return BadRequest();
         var stream = await _openAiService.GetCompletionStream(completion);
+        var result = await _signalRService.StreamToClient(connectionId, "update", stream);
 
-        await _signalRService.StreamToClient(connectionId, "update", stream);
-
-
-        return Ok();
+        return Ok(result);
+        // var res = await _openAiService.GetCompletion(completion);
+        // _logger.LogInformation("{ResponseMessage}", res);
+        // return Ok(res);
     }
 
 
@@ -70,7 +72,7 @@ public class ChatController : ControllerBase
             Messages = new[] {Prompts.BasedSystemMessage, new() {Content = requestMessage, Role = "user"}},
             Temperature = 0.5,
             N = 1,
-            Stream = true,
+            Stream = false,
             MaxTokens = 1000,
             Model = "gpt-3.5-turbo",
         };

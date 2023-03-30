@@ -22,7 +22,7 @@ public class SignalRService : ISignalRService
         _hub = chatHub;
     }
 
-    public async Task StreamToClient(string connectionId, string callbackName, Stream stream)
+    public async Task<string> StreamToClient(string connectionId, string callbackName, Stream stream)
     {
         _logger.LogInformation("Sending object to {ConnectionId}", connectionId);
         // await _hub.Clients.Client(connectionId).SendAsync(callbackName, obj);
@@ -35,11 +35,11 @@ public class SignalRService : ISignalRService
         while (!reader.EndOfStream)
         {
             string? line = await reader.ReadLineAsync();
-            if (line is null or "") continue;
-            if (line == "data: [DONE]")
-            {
-                break;
-            }
+            if (line is null or "" or "stop" or "data: [DONE]") continue;
+            // if (line == "data: [DONE]")
+            // {
+            //     break;
+            // }
 
             try
             {
@@ -64,6 +64,8 @@ public class SignalRService : ISignalRService
                 {
                     continue;
                 }
+
+                sb.Append(res.Content);
             }
             catch (Exception e)
             {
@@ -71,7 +73,6 @@ public class SignalRService : ISignalRService
                 Console.WriteLine(line);
             }
 
-            sb.Append(res.Content);
             try
             {
                 await _hub.SendObject(connectionId, callbackName, res);
@@ -81,5 +82,7 @@ public class SignalRService : ISignalRService
                 Console.WriteLine("failed to send wss" + e.Message);
             }
         }
+
+        return sb.ToString();
     }
 }
