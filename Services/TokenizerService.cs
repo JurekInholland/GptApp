@@ -51,7 +51,7 @@ public class TokenizerService : ITokenizerService
     {
         if (PythonEngine.IsInitialized) return;
         Console.WriteLine("Initializing Python");
-        Runtime.PythonDLL = _config.PythonPath;
+        // Runtime.PythonDLL = _config.PythonPath;
         PythonEngine.Initialize();
         PythonEngine.BeginAllowThreads();
     }
