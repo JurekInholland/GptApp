@@ -22,10 +22,9 @@ builder.Services.AddScoped<ISignalRService, SignalRService>();
 builder.Services.AddSingleton<ITokenizerService, TokenizerService>();
 
 var config = new ConfigurationBuilder()
-    .AddJsonFile("appsettings.json", true, true)
-    .AddJsonFile("appsettings.Development.json", true, true)
     .AddEnvironmentVariables()
     .Build();
+
 
 builder.Services.Configure<AppConfig>(cfg =>
 {
