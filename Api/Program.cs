@@ -37,7 +37,7 @@ builder.Services.Configure<AppConfig>(cfg =>
 {
     cfg.ApiKey = config.GetValue<string>("OpenAiApiKey") ?? string.Empty;
     cfg.OrganizationId = config.GetValue<string>("OpenAiOrganization") ?? string.Empty;
-    cfg.PythonPath = config.GetValue<string>("PythonPath") ?? "/usr/bin/python3.9";
+    cfg.PythonPath = config.GetValue<string>("PythonPath") ?? "/usr/share/doc/libpython3.9-stdlib";
 });
 
 var app = builder.Build();
