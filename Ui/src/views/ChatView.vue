@@ -2,11 +2,11 @@
 import type { ITokenCount, ITokenResponse, ICompletionMessage, IChatCompletionRequest, IModelSettings, IWebsocketMessage } from '../types';
 import { onMounted, ref, watch, nextTick, type Ref, computed, type ComputedRef, onBeforeUnmount } from 'vue'
 import { useSignalR } from '@quangdao/vue-signalr';
-// import CodeBlock from '../components/CodeBlock.vue';
-// import ApiInput from '../components/ApiInput.vue';
-// import Spinner from '../components/Spinner.vue';
-// import Header from '@/components/Header.vue';
-// import ModelSettings from '@/components/ModelSettings.vue';
+import CodeBlock from '../components/CodeBlock.vue';
+import ApiInput from '../components/ApiInput.vue';
+import Spinner from '../components/Spinner.vue';
+import Header from '@/components/Header.vue';
+import ModelSettings from '@/components/ModelSettings.vue';
 import { useApiStore } from "@/stores/api";
 import { defaultSettings, prompts } from '@/constants';
 import gsap from 'gsap';
