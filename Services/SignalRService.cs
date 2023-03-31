@@ -36,7 +36,7 @@ public class SignalRService : ISignalRService
         while (!reader.EndOfStream)
         {
             string? line = await reader.ReadLineAsync();
-            // if (line is null or "" or "{" or "stop" or "data: [DONE]" or """  "error": {""") continue;
+            if (line is null or "" ) continue;
             // if (line == "data: [DONE]")
             // {
             //     break;
@@ -49,12 +49,12 @@ public class SignalRService : ISignalRService
             try
             {
 
-                var cleaned = line;
-                // var cleaned = line.Replace("data: ", "")
-                //         .Replace("finish_reason", "finishreason")
+                // var cleaned = line;
+                var cleaned = line.Replace("data: ", "")
+                .Replace("finish_reason", "finishreason")
                 //         // .Replace("message: ", "")
                 //     .Replace(""" "message": """, "")
-                //     ;
+                ;
                 // if (isError)
                 // {
                 //     cleaned = cleaned.Replace(""".",""", """." """);
