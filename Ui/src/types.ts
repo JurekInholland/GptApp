@@ -10,7 +10,7 @@ export interface IAPIResponse {
   date: string;
   role: string;
   included: boolean;
-  tokenCount: number;
+  tokenCount: ITokenCount;
 }
 export interface ITokenResponse {
   characterCount: number;
@@ -21,7 +21,6 @@ export interface ITokenCount {
   systemPromptTokens: number;
   queryTokens: number;
   historyTokens: number;
-  totalTokens: number;
 }
 
 export interface IModelSettings {
@@ -29,7 +28,7 @@ export interface IModelSettings {
   systemPrompt: string;
   includeHistory: boolean;
   temperature: number;
-  maxTokens: number;
+  maxTokens: string;
   presencePenalty: number;
   frequencyPenalty: number;
   customPrompt: string;

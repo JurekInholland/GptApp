@@ -38,7 +38,7 @@ export default class ApiService {
     connectionId: string
   ) {
     // console.log("getChatCompletions", request, connectionId);
-    return this.axiosCall<IChatCompletionRequest>({
+    return this.axiosCall({
       method: "post",
       url: "/Chat/ServiceRequest",
       data: request,

@@ -5,7 +5,9 @@ import 'highlight.js/styles/base16/gruvbox-dark-medium.css';
 
 import { computed, ref, watch } from 'vue';
 import type { IAPIResponse } from '@/types';
+import { getTotalTokens, getFormattedTokenCount } from '@/utils';
 import { Icon } from '@iconify/vue';
+import Spinner from './Spinner.vue';
 
 const message = ref();
 
@@ -53,15 +55,22 @@ const toggleInclusion = () => {
 
 
 <template>
-  <div class="container" :class="[response.included ? '' : 'hidden', props.response.role === 'user' ? 'green' : 'beige']"
+  <div class="container"
+    :class="[response.included ? '' : 'hidden', props.response.role === 'user' ? 'green' : 'beige', response.status === 'error' ? 'error-msg' : '']"
     style="position: relative;">
-    <div class="message" :class="props.response.role === 'user' ? 'human' : 'bot'">
+    <div class="message" :class="[props.response.role === 'user' ? 'human' : 'bot']">
       <div class="top-bar">
-        <p class="author">{{ props.response.role === 'bot' ?
-          'chad gbd' : 'user' }}</p>
+        <div class="left-section">
+          <p class="author">{{ props.response.role === 'bot' ?
+            'chad gbd' : 'user' }}</p>
+          <Spinner :size=".75" v-if="response.status === 'pending'" />
+          <Icon class="error"
+            :icon="response.status !== 'complete' && response.status !== 'pending' ? 'mdi:error' : ''" />
+        </div>
         <div class="right-section">
-          <p :style="response.tokenCount === null ? 'opacity: 0;' : ''" :class="response.included ? '' : 'hidden'">{{
-            response.tokenCount }} tokens</p>
+          <p v-if="getTotalTokens(response.tokenCount) > 0" :style="response.tokenCount === null ? 'opacity: 0;' : ''"
+            :class="response.included ? '' : 'hidden'">
+            {{ getFormattedTokenCount(response) }} tokens</p>
           <button @click="toggleInclusion">
             <Icon :icon="response.included ? 'mdi:hide' : 'mdi:show'" />
           </button>
@@ -73,6 +82,18 @@ const toggleInclusion = () => {
   </div>
 </template>
 <style >
+.error-msg h2 {
+  /* background-color: red !important;
+  background: blue!important; */
+  color: #d75f5f;
+}
+
+.error {
+  color: #d75f5f;
+  font-size: 1.25rem;
+  margin-left: .5rem;
+}
+
 .container {
   display: flex;
   flex-direction: column;
@@ -86,27 +107,44 @@ const toggleInclusion = () => {
   z-index: -1;
   justify-content: space-between;
   height: 1.5rem;
-  padding-top: 1rem;
+  padding-top: .75rem;
+  /* line-height: 0rem; */
+  margin-bottom: .75rem;
 
+}
+
+.left-section {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  /* gap: .5rem; */
+  line-height: unset;
 }
 
 .right-section {
   display: flex;
-  flex-direction: row;
+  /* flex-direction: row; */
   /* justify-content: space-between; */
   align-items: center;
   justify-content: center;
   gap: .5rem;
+  /* margin-top: .5rem; */
   line-height: unset;
+  max-height: 28px;
 }
 
 .right-section p {
-  margin-top: .25rem;
+  margin: 0;
   color: unset;
   opacity: .5;
   font-size: .8rem;
   text-decoration: none !important;
   transition: all .2 ease;
+}
+
+.right-section button {
+  margin-top: .45rem;
 }
 
 p.hidden {

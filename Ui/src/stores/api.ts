@@ -1,6 +1,11 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
-import type { IAPIResponse, IModelSettings, IWebsocketMessage } from "@/types";
+import type {
+  IAPIResponse,
+  IModelSettings,
+  ITokenCount,
+  IWebsocketMessage,
+} from "@/types";
 import { defaultSettings } from "@/constants";
 
 export const useApiStore = defineStore("api", () => {
@@ -28,12 +33,12 @@ export const useApiStore = defineStore("api", () => {
         date: new Date().toISOString(),
         role: "bot",
         included: true,
-        tokenCount: 0
+        tokenCount: { systemPromptTokens: 0, queryTokens: 0, historyTokens: 0 },
       };
     }
-    responses.value[message.id].tokenCount += 1;
+    responses.value[message.id].tokenCount.queryTokens += 1;
     // if (message.finishReason) {
-      // console.log("FINISH REASON");
+    // console.log("FINISH REASON");
     // }
     if (message.finishReason === "stop") {
       // console.log("Complete");
@@ -47,19 +52,38 @@ export const useApiStore = defineStore("api", () => {
   }
   function updateApiMessageTokenCount(id: string, tokenCount: number) {
     if (responses.value[id]) {
-      responses.value[id].tokenCount = tokenCount;
+      responses.value[id].tokenCount.queryTokens = tokenCount;
     }
   }
-  function addUserResponse(message: string, tokenCount: number) {
+  function cancelPendingMessages() {
+    for (const key in responses.value) {
+      if (responses.value[key].status === "pending") {
+        responses.value[key].status = "cancelled";
+      }
+    }
+  }
+
+  function addErrorResponse(message: string) {
     const response: IAPIResponse = {
       message: message,
-      status: "",
+      status: "error",
+      date: new Date().toISOString(),
+      role: "bot",
+      included: true,
+      tokenCount: { systemPromptTokens: 0, queryTokens: 0, historyTokens: 0 },
+    };
+    responses.value[response.date] = response;
+  }
+
+  function addUserResponse(message: string, tokenCount: ITokenCount) {
+    const response: IAPIResponse = {
+      message: message,
+      status: "complete",
       date: new Date().toISOString(),
       role: "user",
       included: true,
-      tokenCount: tokenCount,
+      tokenCount: { ...tokenCount },
     };
-
     responses.value[response.date] = response;
   }
 
@@ -81,7 +105,9 @@ export const useApiStore = defineStore("api", () => {
     increment,
     updateResponse,
     updateApiMessageTokenCount,
+    cancelPendingMessages,
     addUserResponse,
+    addErrorResponse,
     getResponse,
     getSettings,
     sortedResponses,

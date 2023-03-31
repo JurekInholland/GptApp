@@ -35,9 +35,19 @@ const includedMessagesCount = ref(0);
 const latestStatus: ComputedRef<string> = computed(() => {
     return store.sortedResponses[store.sortedResponses.length - 1]?.status ?? "pending";
 });
+function handleResize(event: UIEvent) {
+    const currentWin = event.currentTarget as Window;
+    const targetWin = event.target as Window;
 
+    console.log('resize', event, currentWin.innerWidth, targetWin.innerWidth);
+    animateMargin(settingsOpen.value);
+
+
+}
 onBeforeUnmount(async () => {
     signalr.off('update', receiveStatusUpdate);
+    window.removeEventListener('resize', handleResize);
+
 });
 
 onMounted(async () => {
@@ -48,10 +58,16 @@ onMounted(async () => {
     signalr.connection.onclose(() => {
         handleConnectionClose()
     })
+    signalr.connection.onreconnected(() => {
+        console.log("reconnected");
+        connected.value = true;
+    })
     bodyElement.value = document.body;
+    window.addEventListener('resize', handleResize);
     await nextTick();
 
     // const con = signalr.connection.connectionId;
+
 
     setTimeout(async () => {
         let conId: string | null = null;
@@ -87,7 +103,6 @@ const tokenCount: Ref<ITokenCount> = ref({
     historyTokens: 0,
     systemPromptTokens: 0,
     queryTokens: 0,
-    totalTokens: 0,
 });
 
 watch(settingsOpen, async (val) => {
@@ -113,10 +128,15 @@ function isScrolledToBottom() {
     const scrollTop = scrollBar.value!.scrollEl.scrollTop;
     const scrollHeight = scrollBar.value!.scrollEl.scrollHeight;
     const clientHeight = scrollBar.value!.scrollEl.clientHeight;
-
-    const isScrolled = scrollTop + clientHeight >= Math.floor(scrollHeight - 100);
-    // console.log("isScrolled", isScrolled)
-    return isScrolled;
+    if (scrollTop + clientHeight + 150 >= scrollHeight) {
+        return true;
+    }
+    console.log("dbg", scrollTop + clientHeight + 100, scrollHeight)
+    const isScrolled = scrollTop + clientHeight + 100 >= scrollHeight;
+    console.log("isScrolled", isScrolled)
+    console.log("scrollTop", scrollTop, "scrollHeight", scrollHeight, "clientHeight", clientHeight)
+    // return isScrolled;
+    return false
 
 }
 
@@ -152,19 +172,29 @@ const totalTokens = computed(() => {
     return tokenCount.value.historyTokens + tokenCount.value.systemPromptTokens + tokenCount.value.queryTokens;
 })
 const totalConversationTokens = computed(() => {
-    return store.sortedResponses.map(x => x.tokenCount).reduce((a, b) => a + b, 0);
+    return store.sortedResponses.map(x => getTotalTokenCount(x.tokenCount)).reduce((a, b) => a + b, 0);
 })
-
+function getTotalTokenCount(tokenCounts: ITokenCount): number {
+    return tokenCounts.historyTokens + tokenCounts.systemPromptTokens + tokenCounts.queryTokens;
+}
 watch(() => store.sortedResponses, async () => {
     // console.log('sortedResponses changed');
     countHistoryTokens();
 
     includedMessagesCount.value = countIncludedMessages(systemPromptText.value.length);
-})
-watch(modelSettings.value, async (old: IModelSettings, updated: IModelSettings) => {
+});
+
+watch(modelSettings.value, async (newSettings) => {
+    await nextTick();
+    console.log("TRIGG");
     includedMessagesCount.value = countIncludedMessages(systemPromptText.value.length);
     countHistoryTokens();
-    animateMargin(true)
+    console.log("DUIS")
+
+    await nextTick();
+    setTimeout(() => {
+        animateMargin(settingsOpen.value);
+    }, 1);
 });
 
 watch(systemPromptText, async (old, updated) => {
@@ -177,9 +207,16 @@ watch(userInput, async () => {
     includedMessagesCount.value = countIncludedMessages(systemPromptText.value.length);
 })
 
-// watch(tokenCount.value, async () => {
-//     console.log('tokenCount changed', tokenCount.value);
-// })
+watch(tokenCount.value, async (count: ITokenCount) => {
+    console.log('tokenCount changed', tokenCount.value);
+    if (!modelSettings.value.includeHistory) {
+        return;
+    }
+    const totalTokenCount = getTotalTokenCount(count);
+    if (totalTokenCount + parseInt(modelSettings.value.maxTokens) > 2048) {
+        console.log("Too many tokens", typeof (totalTokenCount), typeof (modelSettings.value.maxTokens));
+    }
+})
 
 watch(store.sortedResponses, async () => {
     console.log('sortedResponses changed');
@@ -199,12 +236,13 @@ async function countSystemPromptTokens() {
         tokenCount.value.systemPromptTokens = 0;
         return;
     }
-    tokenCount.value.systemPromptTokens = await countTokens(`'system': '${systemPromptText.value}'`);
+    tokenCount.value.systemPromptTokens = await countTokens(`'system': '${systemPromptText.value}' `);
 }
 
 function handleConnectionClose() {
     console.log("Connection closed");
     connected.value = false;
+    store.cancelPendingMessages();
 }
 
 
@@ -230,12 +268,20 @@ const submit = async () => {
         console.log("No connection id");
         return;
     }
-    store.addUserResponse(userInput.value, totalTokens.value);
+    store.addUserResponse(userInput.value, tokenCount.value);
     // result.value = "";
     userInput.value = "";
 
     console.log(totalTokens.value + " tokens");
-    await apiService.getChatCompletions(createCompletionRequest(), conId);
+    await nextTick();
+    scrollBar.value!.scrollEl.scrollTo({ top: scrollBar.value!.scrollEl.scrollHeight + 1232, behavior: "smooth" })
+    const result: any = await apiService.getChatCompletions(createCompletionRequest(), conId);
+    if (result.error) {
+        inProcess.value = false;
+        store.addErrorResponse(`## ${result.error.code}\n${result.error.message}`);
+    }
+    console.log("res", `${result}`);
+
 }
 
 function scroll() {
@@ -300,7 +346,7 @@ function createCompletionRequest(): IChatCompletionRequest {
     const request: IChatCompletionRequest = {
         model: modelSettings.value.model,
         temperature: modelSettings.value.temperature,
-        max_tokens: modelSettings.value.maxTokens,
+        max_tokens: parseInt(modelSettings.value.maxTokens),
         frequency_penalty: modelSettings.value.frequencyPenalty,
         presence_penalty: modelSettings.value.presencePenalty,
         n: 1,
@@ -336,7 +382,7 @@ async function tokenTest() {
             <p v-if="totalConversationTokens > 0" class="token-count">total conversation tokens: <b>{{
                 totalConversationTokens }}</b>
                 / <b style="color:rgba(255,255,255,.75);">€{{ (totalConversationTokens * 0.000002).toFixed(2) }}</b></p>
-
+            <div v-else></div>
         </div>
         <!-- <button @click="scroll">scrl</button> -->
     </div>
@@ -349,7 +395,8 @@ async function tokenTest() {
 
             <div class="sec">
                 <!--  :class="store.sortedResponses.length - (i + 1) < includedMessagesCount ? 'ok' : 'grey'" -->
-                <CodeBlock style="block" v-for="(item, i) in store.sortedResponses" :response="item" :key="item.message" />
+                <CodeBlock v-auto-animate style="block" v-for="(item, i) in store.sortedResponses" :response="item"
+                    :key="item.date" />
             </div>
             <Transition>
                 <ModelSettings ref="settingsContainer" v-model="modelSettings" v-if="settingsOpen" />
@@ -397,6 +444,7 @@ async function tokenTest() {
     margin: 0 1rem;
     height: 51px;
     white-space: nowrap;
+    gap: 1rem;
 }
 
 .block {

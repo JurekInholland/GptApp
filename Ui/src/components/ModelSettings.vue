@@ -54,14 +54,16 @@ onMounted(() => {
                     <option v-for="[key, prompt] in Object.entries(prompts)" :value="key">{{ prompt.name }}</option>
 
                     <!-- <option value="default">default</option>
-                                                                                                                                                            <option value="chadgbd">chadgbd</option>
-                                                                                                                                                            <option value="system3">system3</option> -->
+                                                                                                                                                                <option value="chadgbd">chadgbd</option>
+                                                                                                                                                                <option value="system3">system3</option> -->
                 </select>
             </label>
             <label for="temp">Temperature: {{ modelValue.temperature }}
+                <p>very random</p>
                 <input class="slider" v-model="modelValue.temperature" name="temp" type="range" min="0" max="2" step="0.1">
             </label>
             <label for="maxTokens">Max tokens: {{ modelValue.maxTokens }}
+                <p>Request + max cannot exceed 4096</p>
                 <input v-model="modelValue.maxTokens" name="maxTokens" type="range" min="0" max="4096" step="1">
             </label>
 
@@ -88,13 +90,11 @@ onMounted(() => {
                     </button>
                 </div>
             </label>
-            <Transition>
-                <label v-if="customPromptShown" class="text">Custom Prompt
-                    <custom-scrollbar class="scroll" style="width: 100%; height: 100%;">
-                        <textarea style="width: 100%;" v-model="modelValue.customPrompt" name="prompt"></textarea>
-                    </custom-scrollbar>
-                </label>
-            </Transition>
+            <label v-if="customPromptShown" class="text">Custom Prompt
+                <custom-scrollbar class="scroll" style="width: 100%; height: 100%;">
+                    <textarea style="width: 100%;" v-model="modelValue.customPrompt" name="prompt"></textarea>
+                </custom-scrollbar>
+            </label>
         </section>
     </div>
 </template>
@@ -225,7 +225,19 @@ label {
     white-space: nowrap;
     font-weight: bold;
 }
-
+label p {
+    font-size: .75rem;
+    font-weight: normal;
+    color: rgba(255, 255, 255, .5);
+    margin: 0;
+    margin-top: -.25rem;
+    margin-bottom: -.25rem;
+    padding: 0;
+    line-height: 1.2;
+    text-align: center;
+    white-space: pre-wrap;
+    width: 100%;
+}
 label :nth-child(1) {
     /* background-color: red; */
     /* overflow: hidden; */

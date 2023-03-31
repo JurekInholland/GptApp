@@ -1,5 +1,16 @@
+<script setup lang="ts">
+import { defineProps } from 'vue';
+const props = defineProps({
+  size: {
+    type: Number,
+    default: 1
+  }
+})
+</script>
+
+
 <template>
-    <div class="lds-ellipsis">
+    <div :style="{ scale: size }" class="lds-ellipsis">
         <div></div>
         <div></div>
         <div></div>
@@ -10,9 +21,10 @@
 <style scoped>
 .lds-ellipsis {
     display: inline-block;
-    /* position: relative; */
+    position: relative;
     width: 80px;
     height: 80px;
+
 }
 
 .lds-ellipsis div {

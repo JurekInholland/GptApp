@@ -1,11 +1,13 @@
-import type { IModelSettings, IPrompt } from "./types";
+import type { IModelSettings, IPrompt, ITokenCount } from "./types";
+
+
 
 export const defaultSettings: IModelSettings = {
   model: "gpt-3.5-turbo",
   systemPrompt: "chadGbd",
   includeHistory: true,
   temperature: 0.5,
-  maxTokens: 500,
+  maxTokens: "500",
   frequencyPenalty: 0.0,
   presencePenalty: 0.0,
   customPrompt: "You are a helpful assistant.",
