@@ -69,7 +69,7 @@ public class SignalRService : ISignalRService
 
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
+                    // Console.WriteLine(e.Message);
                     sb.Append(line);
                     continue;
                 }

@@ -186,10 +186,8 @@ watch(() => store.sortedResponses, async () => {
 
 watch(modelSettings.value, async (newSettings) => {
     await nextTick();
-    console.log("TRIGG");
     includedMessagesCount.value = countIncludedMessages(systemPromptText.value.length);
     countHistoryTokens();
-    console.log("DUIS")
 
     await nextTick();
     setTimeout(() => {
@@ -208,7 +206,7 @@ watch(userInput, async () => {
 })
 
 watch(tokenCount.value, async (count: ITokenCount) => {
-    console.log('tokenCount changed', tokenCount.value);
+    // console.log('tokenCount changed', tokenCount.value);
     if (!modelSettings.value.includeHistory) {
         return;
     }
@@ -272,7 +270,7 @@ const submit = async () => {
     // result.value = "";
     userInput.value = "";
 
-    console.log(totalTokens.value + " tokens");
+    // console.log(totalTokens.value + " tokens");
     await nextTick();
     scrollBar.value!.scrollEl.scrollTo({ top: scrollBar.value!.scrollEl.scrollHeight + 1232, behavior: "smooth" })
     const result: any = await apiService.getChatCompletions(createCompletionRequest(), conId);
@@ -280,7 +278,7 @@ const submit = async () => {
         inProcess.value = false;
         store.addErrorResponse(`## ${result.error.code}\n${result.error.message}`);
     }
-    console.log("res", `${result}`);
+    // console.log("res", `${result}`);
 
 }
 
