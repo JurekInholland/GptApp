@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { defineProps } from 'vue';
 const props = defineProps({
-  size: {
-    type: Number,
-    default: 1
-  }
+    size: {
+        type: Number,
+        default: 1
+    }
 })
 </script>
 

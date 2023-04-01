@@ -199,6 +199,7 @@ code {
   color: var(--color-green);
   font-weight: bold;
   font-family: "Roboto Mono";
+  white-space: pre-wrap;
 
 }
 
@@ -244,6 +245,9 @@ code {
 
 }
 
+.message>div>p {
+  color: #eed9c1;
+}
 
 .hidden .message,
 .hidden .author,

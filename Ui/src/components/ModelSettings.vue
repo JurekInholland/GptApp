@@ -1,29 +1,52 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue';
 import type { IModelSettings } from '@/types';
-import { onMounted, watch, ref } from 'vue';
+import { onMounted, watch, ref, reactive } from 'vue';
 import { models, prompts } from '@/constants';
 import { useApiStore } from '@/stores/api';
-
+import { countTokens, getTemperatureString, getSystemPromptTokens } from '@/utils'
 const store = useApiStore()
 
 interface CustomComponentProps {
     modelValue: IModelSettings,
 }
 const props = defineProps<CustomComponentProps>()
-
+const modelValue = reactive(props.modelValue)
 const emits = defineEmits(['update:modelValue'])
 
+const systemTokenCount = ref(0)
+
 const customPromptShown = ref(props.modelValue.systemPrompt === "custom" ? true : false);
-watch(props, () => {
-    if (props.modelValue.systemPrompt === "custom") {
-        customPromptShown.value = true;
-    }
-    else {
-        customPromptShown.value = false;
-    }
-    emits('update:modelValue', props.modelValue)
-})
+watch(modelValue, (newP, oldP) => {
+    console.log("modelValue changed", newP, oldP)
+
+    // if (newVal.systemPrompt === "custom") {
+    //     customPromptShown.value = true;
+    // }
+    // else {
+    //     customPromptShown.value = false;
+    // }
+    // emits('update:modelValue', props.modelValue)
+});
+// watch(props.modelValue, async () => {
+//     console.log("props changed")
+//     if (props.modelValue.systemPrompt === "custom") {
+//         customPromptShown.value = true;
+//     }
+//     else {
+//         customPromptShown.value = false;
+//     }
+//     systemTokenCount.value = await countTokens(getSystemPromptTokens(props.modelValue));
+//     if (props.modelValue.systemPrompt === "default") {
+//         systemTokenCount.value = 0;
+//     }
+//     else {
+//         systemTokenCount.value = systemTokenCount.value + 1;
+//     }
+
+//     emits('update:modelValue', props.modelValue)
+// })
+
 
 function updateValue(event: Event) {
     const value = (event.target as HTMLInputElement)?.value
@@ -42,6 +65,7 @@ onMounted(() => {
     <div class="container">
         <section>
             <label for="model">Model
+                <p>$0.002 / 1K tokens</p>
                 <select v-model="modelValue.model" name="model" id="">
                     <option v-for="[key, val] in Object.entries(models)" :value="key" :disabled="key != 'gpt-3.5-turbo'">{{
                         val }}</option>
@@ -49,20 +73,21 @@ onMounted(() => {
                 </select>
             </label>
             <label for="system">Persona
+                <p>Token count: {{ systemTokenCount }}</p>
                 <select v-model="modelValue.systemPrompt" name="system" id="">
 
                     <option v-for="[key, prompt] in Object.entries(prompts)" :value="key">{{ prompt.name }}</option>
 
                     <!-- <option value="default">default</option>
-                                                                                                                                                                <option value="chadgbd">chadgbd</option>
-                                                                                                                                                                <option value="system3">system3</option> -->
+                                                                                                                                                                                                                                                        <option value="chadgbd">chadgbd</option>
+                                                                                                                                                                                                                                                        <option value="system3">system3</option> -->
                 </select>
             </label>
-            <label for="temp">Temperature: {{ modelValue.temperature }}
-                <p>very random</p>
+            <label style="min-width: 124px;" for="temp">Temperature: {{ modelValue.temperature }}
+                <p>{{ getTemperatureString(parseInt(modelValue.temperature)) }}</p>
                 <input class="slider" v-model="modelValue.temperature" name="temp" type="range" min="0" max="2" step="0.1">
             </label>
-            <label for="maxTokens">Max tokens: {{ modelValue.maxTokens }}
+            <label style="min-width: 129px;" for="maxTokens">Max tokens: {{ modelValue.maxTokens }}
                 <p>Request + max cannot exceed 4096</p>
                 <input v-model="modelValue.maxTokens" name="maxTokens" type="range" min="0" max="4096" step="1">
             </label>
@@ -221,10 +246,11 @@ label {
     color: rgba(255, 255, 255, .85);
     flex-grow: 1;
     text-align: left;
-    flex-basis: 120px;
+    flex-basis: 112px;
     white-space: nowrap;
     font-weight: bold;
 }
+
 label p {
     font-size: .75rem;
     font-weight: normal;
@@ -238,6 +264,7 @@ label p {
     white-space: pre-wrap;
     width: 100%;
 }
+
 label :nth-child(1) {
     /* background-color: red; */
     /* overflow: hidden; */

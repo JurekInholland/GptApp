@@ -27,7 +27,7 @@ export interface IModelSettings {
   model: string;
   systemPrompt: string;
   includeHistory: boolean;
-  temperature: number;
+  temperature: string;
   maxTokens: string;
   presencePenalty: number;
   frequencyPenalty: number;

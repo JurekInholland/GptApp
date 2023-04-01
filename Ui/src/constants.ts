@@ -1,12 +1,12 @@
 import type { IModelSettings, IPrompt, ITokenCount } from "./types";
 
-
+export const appVersion: string = "0.0.1";
 
 export const defaultSettings: IModelSettings = {
   model: "gpt-3.5-turbo",
   systemPrompt: "chadGbd",
   includeHistory: true,
-  temperature: 0.5,
+  temperature: "0.5",
   maxTokens: "500",
   frequencyPenalty: 0.0,
   presencePenalty: 0.0,

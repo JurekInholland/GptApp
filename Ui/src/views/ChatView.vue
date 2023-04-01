@@ -9,11 +9,10 @@ import Header from '@/components/Header.vue';
 import ModelSettings from '@/components/ModelSettings.vue';
 import { useApiStore } from "@/stores/api";
 import { defaultSettings, prompts } from '@/constants';
+import { countTokens, apiService, getSystemPromptTokens } from '@/utils';
 import gsap from 'gsap';
-import ApiService from '@/api';
 const store = useApiStore();
 
-const apiService = new ApiService()
 
 const code = "To get started with creating Tetris in Python, you can follow these steps:\n\n1. Install Pygame library: Pygame is a library in Python that is used for creating games. You can install it using pip by running the following command in your terminal: `pip install pygame`.\n\n2. Create a new Python file: Open your preferred code editor and create a new Python file.\n\n3. Import Pygame: To use Pygame in your program, you need to import it at the beginning of your Python file by adding the following code:\n\n   ```\n   import pygame\n   pygame.init()\n   ```\n\n4. Set up the game window: Use Pygame to create a game window by adding the following code:\n\n   ```\n   screen_width = 800\n   screen_height = 600\n   screen = pygame.display.set_mode((screen_width, screen_height))\n   pygame.display.set_caption(\"Tetris\")\n   ```\n\n   This code sets the width and height of the game window, creates a new Pygame display surface, and sets the caption of the game window to \"Tetris\".\n\n5. Create the game loop: The game loop is a while loop that runs continuously until the game is over. Add the following code to create the game loop:\n\n   ```\n   running = True\n   while running:\n       for event in pygame.event.get():\n           if event.type == pygame.QUIT:\n               running = False\n   ```\n\n   This code creates a boolean variable called \"running\" that is set to True. The while loop runs until \"running\" is set to False. The for loop inside the while loop iterates over all the events in the Pygame event queue. If the user clicks the \"x\" button in the top right corner of the game window, the event type is set to pygame.QUIT, and the \"running\" variable is set to False, which will exit the game loop.\n\n6. Draw the game board: Use Pygame to draw the game board by adding the following code:\n\n   ```\n   # Draw the game board\n   block_size = 20\n   board_width = 10\n   board_height = 20\n   board_x = (screen_width - block_size * board_width) / 2\n   board_y = (screen_height - block_size * board_height) / 2\n\n   for i in range(board_width):\n       for j in range(board_height):\n           pygame.draw.rect(screen, (255, 255, 255), (board_x + i * block_size, board_y + j * block_size, block_size, block_size), 1)\n   ```\n\n   This code sets the block size, board width, and board height. It also calculates the x and y coordinates of the game board using the block size, board width, and board height. The for loops inside the code iterate over all the blocks in the game board and draw them using Pygame's draw.rect() function.\n\n7. Update the game window: Use Pygame to update the game window and display the changes by adding the following code:\n\n   ```\n   pygame.display.update()\n   ```\n\n   This code updates the display surface and shows the changes made in the game board.\n\n8. Run the program: Save your Python file and run it in your terminal by typing `python filename.py`. You should see a game window with an empty game board.\n\n9. Add game logic: Start adding game logic to your program such as moving and rotating blocks, checking for completed rows, and scoring points.\n\nThese steps should give you a basic idea of how to create Tetris in Python using Pygame. You can continue to add more features and functionality to your game as you learn more about Python and Pygame.";
 const signalr = useSignalR();
@@ -163,9 +162,7 @@ watch(result, async (val) => {
 })
 
 const systemPromptText = computed(() => {
-    if (modelSettings.value.systemPrompt === "custom")
-        return modelSettings.value.customPrompt;
-    return prompts[modelSettings.value.systemPrompt].prompt;
+    return getSystemPromptTokens(modelSettings.value);
 })
 
 const totalTokens = computed(() => {
@@ -210,10 +207,11 @@ watch(tokenCount.value, async (count: ITokenCount) => {
     if (!modelSettings.value.includeHistory) {
         return;
     }
-    const totalTokenCount = getTotalTokenCount(count);
-    if (totalTokenCount + parseInt(modelSettings.value.maxTokens) > 2048) {
-        console.log("Too many tokens", typeof (totalTokenCount), typeof (modelSettings.value.maxTokens));
-    }
+
+    // const totalTokenCount = getTotalTokenCount(count);
+    // if (totalTokenCount + parseInt(modelSettings.value.maxTokens) > 2048) {
+    //     console.log("Too many tokens", typeof (totalTokenCount), typeof (modelSettings.value.maxTokens));
+    // }
 })
 
 watch(store.sortedResponses, async () => {
@@ -343,7 +341,7 @@ function createCompletionRequest(): IChatCompletionRequest {
 
     const request: IChatCompletionRequest = {
         model: modelSettings.value.model,
-        temperature: modelSettings.value.temperature,
+        temperature: parseInt(modelSettings.value.temperature),
         max_tokens: parseInt(modelSettings.value.maxTokens),
         frequency_penalty: modelSettings.value.frequencyPenalty,
         presence_penalty: modelSettings.value.presencePenalty,
@@ -355,11 +353,11 @@ function createCompletionRequest(): IChatCompletionRequest {
     return request;
 }
 
-async function countTokens(text: string): Promise<number> {
-    if (text.length === 0) return 0;
-    const requestTokens: ITokenResponse = await apiService.GetTokens(`${text}`) as ITokenResponse;
-    return requestTokens.tokenCount;
-}
+// async function countTokens(text: string): Promise<number> {
+//     if (text.length === 0) return 0;
+//     const requestTokens: ITokenResponse = await apiService.GetTokens(`${text}`) as ITokenResponse;
+//     return requestTokens.tokenCount;
+// }
 
 async function tokenTest() {
     const reqToken = await countTokens(userInput.value);
